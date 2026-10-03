@@ -1,0 +1,682 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>殷丹玲 - 前端工程师简历</title>
+    <style>
+      /* ========== 基础重置与打印优化 ========== */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      @page {
+        size: A4;
+        margin: 6mm 12mm;
+      }
+
+      @media print {
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          background: #fff;
+        }
+        .resume {
+          box-shadow: none;
+          margin: 0;
+          padding: 12px 24px;
+        }
+      }
+
+      /* ========== 全局样式 ========== */
+      body {
+        font-family:
+          'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+        font-size: 13px;
+        line-height: 1.6;
+        color: #2d3748;
+        background: #f0f2f5;
+      }
+
+      .resume {
+        max-width: 210mm;
+        margin: 20px auto;
+        background: #ffffff;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+        padding: 28px 30px 16px 30px;
+      }
+
+      a {
+        color: #1a4d8c;
+        text-decoration: none;
+      }
+
+      /* ========== 头部区域 ========== */
+      .header {
+        text-align: center;
+        padding-bottom: 14px;
+        border-bottom: 2px solid #1a4d8c;
+        margin-bottom: 14px;
+      }
+
+      .header h1 {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1a202c;
+        letter-spacing: 4px;
+        margin-bottom: 4px;
+      }
+
+      .header .subtitle {
+        font-size: 14px;
+        color: #1a4d8c;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+
+      .header .contact {
+        display: flex;
+        justify-content: center;
+        flex-wrap: nowrap;
+        gap: 4px 14px;
+        font-size: 11.5px;
+        color: #2d3748;
+      }
+
+      .header .contact span::before {
+        content: '';
+        display: inline-block;
+        width: 3px;
+        height: 3px;
+        background: #1a4d8c;
+        border-radius: 50%;
+        margin-right: 4px;
+        vertical-align: middle;
+      }
+
+      /* ========== 个人简介 ========== */
+      .summary {
+        background: #eef3f9;
+        border-left: 3px solid #1a4d8c;
+        padding: 8px 14px;
+        margin-bottom: 14px;
+        font-size: 12.5px;
+        color: #2d3748;
+        line-height: 1.6;
+        border-radius: 0 4px 4px 0;
+      }
+
+      /* ========== 区块标题 ========== */
+      .section-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a202c;
+        padding-bottom: 4px;
+        border-bottom: 1.5px solid #e2e8f0;
+        margin-bottom: 10px;
+        margin-top: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .section-title::before {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 16px;
+        background: #1a4d8c;
+        border-radius: 2px;
+      }
+
+      /* ========== 技能标签 ========== */
+      .skills-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3px;
+      }
+
+      .skill-item {
+        font-size: 12px;
+        line-height: 1.55;
+        color: #2d3748;
+        padding-left: 14px;
+        position: relative;
+      }
+
+      .skill-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 9px;
+        width: 5px;
+        height: 5px;
+        background: #1a4d8c;
+        border-radius: 50%;
+      }
+
+      .skill-item strong {
+        color: #2d3748;
+        font-weight: 600;
+      }
+
+      /* ========== 公司区块 ========== */
+      .company {
+        margin-bottom: 12px;
+      }
+
+      .company-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 2px;
+        flex-wrap: wrap;
+      }
+
+      .company-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a202c;
+      }
+
+      .company-role {
+        font-size: 13px;
+        color: #1a4d8c;
+        font-weight: 600;
+      }
+
+      .company-period {
+        font-size: 12px;
+        color: #718096;
+        font-style: italic;
+        white-space: nowrap;
+      }
+
+      /* ========== 项目区块 ========== */
+      .project {
+        margin-top: 6px;
+        margin-bottom: 8px;
+        padding-left: 12px;
+        border-left: 2px solid #e2e8f0;
+      }
+
+      .project-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 2px;
+      }
+
+      .project-desc {
+        font-size: 11.5px;
+        color: #4a5568;
+        line-height: 1.5;
+        margin-bottom: 4px;
+      }
+
+      .project-tech {
+        display: inline-block;
+        font-size: 11px;
+        color: #1a4d8c;
+        background: #dbe7f3;
+        padding: 1px 8px;
+        border-radius: 3px;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      .project-period-inline {
+        font-size: 11px;
+        color: #718096;
+        margin-left: 6px;
+      }
+
+      .label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-top: 5px;
+        margin-bottom: 2px;
+      }
+
+      .project-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .project-list li {
+        font-size: 12px;
+        line-height: 1.55;
+        color: #2d3748;
+        padding-left: 14px;
+        position: relative;
+        margin-bottom: 1px;
+      }
+
+      .project-list li::before {
+        content: '▸';
+        position: absolute;
+        left: 0;
+        color: #1a4d8c;
+        font-size: 11px;
+      }
+
+      /* ========== 教育经历 ========== */
+      .edu {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .edu-school {
+        font-size: 13px;
+        font-weight: 700;
+        color: #2d3748;
+      }
+
+      .edu-major {
+        font-size: 12.5px;
+        color: #4a5568;
+      }
+
+      .edu-detail {
+        font-size: 11.5px;
+        color: #718096;
+        font-style: italic;
+      }
+
+      .tags {
+        display: flex;
+        gap: 6px;
+        margin-top: 4px;
+        flex-wrap: wrap;
+      }
+
+      .tag {
+        font-size: 11px;
+        background: #dbe7f3;
+        color: #1a4d8c;
+        padding: 1px 8px;
+        border-radius: 3px;
+        font-weight: 500;
+      }
+
+      /* ========== 分隔线 ========== */
+      .divider {
+        border: none;
+        border-top: 1px dashed #e2e8f0;
+        margin: 8px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="resume">
+      <!-- ===== 头部 ===== -->
+      <div class="header">
+        <h1>殷 丹 玲</h1>
+        <div class="subtitle">
+          前端工程师 ｜ 6 年经验 ｜ React / TypeScript / Next ｜ Web · 跨端 ·
+          SDK 全栈交付
+        </div>
+        <div class="contact">
+          <span>15012870970</span>
+          <span>y370900736@163.com</span>
+          <!-- <span>广州</span> -->
+          <span>CET6 / 英语日常</span>
+          <span
+            ><a
+              href="https://github.com/yuebanyin/engineering-notes"
+              target="_blank"
+              >GitHub 技术文档</a
+            ></span
+          >
+        </div>
+      </div>
+
+      <!-- ===== 个人简介 ===== -->
+      <!-- <div class="summary">
+        6 年前端开发经验，技术栈以 React + TypeScript 为主，熟悉 Vue
+        全家桶，具备
+        <strong>企业级 Web 平台、SaaS 应用、跨端小程序、前端 SDK</strong>
+        等多类型项目从 0 到 1
+        的独立架构与交付能力。熟悉单点登录与权限体系、支付与电商链路、性能优化与自动化测试落地，曾参与微软
+        CoreAI 团队与 Expedia Hotels.com
+        等项目协作；具备英文文档阅读与跨地域沟通能力，注重代码质量、安全规范与可维护性。
+      </div> -->
+      <div class="summary">
+        6 年前端开发经验，技术栈以
+        <strong>React + TypeScript</strong> 为主，熟悉 Vue 全家桶，具备<strong
+          >企业级 Web 平台、SaaS 应用、跨端小程序、前端 SDK</strong
+        >
+        等多类型项目从 0 到 1 的独立架构与交付能力。同时具备
+        <strong
+          >Node.js（Next.js API Routes / Express / npm 包发布）与
+          Python（评测脚本 / Pipeline 编排 / Docker 集成）</strong
+        >
+        的实战经验，能独立完成中小型全栈交付。近一年派驻微软 CoreAI
+        Post-Training 团队，使用 Python + Docker 端到端搭建模型评测
+        Pipeline。日常深度使用
+        <strong>Claude Code / GitHub Copilot</strong> 进行 Vibe Coding 与
+        SubAgent
+        工作流编排，注重代码质量、安全规范与可维护性，具备英文工作环境下的跨地域协作能力。
+      </div>
+
+      <!-- ===== 专业技能 ===== -->
+      <div class="section-title">专业技能</div>
+      <div class="skills-grid">
+        <div class="skill-item">
+          <strong>核心技术栈：</strong>熟练 React 18（Hooks / Context / Fiber
+          渲染机制）、TypeScript、Redux / MobX；熟悉
+          <strong>Next.js</strong>（App Router / SSR / SSG / ISR / API
+          Routes）服务端渲染与全栈开发模式；熟悉 Vue
+          全家桶生态，可快速承接或重构 Vue 项目。
+        </div>
+        <div class="skill-item">
+          <strong>工程化与构建：</strong>熟练 Webpack / Vite / Rollup
+          构建与性能优化，掌握 splitChunks / Tree Shaking / 按需加载 / CDN
+          等首屏优化手段；熟悉 Node.js 与 npm / yarn / pnpm。
+        </div>
+        <div class="skill-item">
+          <strong>企业级认证与安全：</strong>熟悉 MSAL + 微软 AAD
+          单点登录全流程、OAuth2 / JWT、CSRF / XSS 防护、HTTPS
+          与跨域策略，具备金融/企业级前端安全实践经验。
+        </div>
+        <div class="skill-item">
+          <strong>国际化与跨端：</strong>熟悉 i18next
+          多语言、货币与日期本地化方案；掌握 Taro + Tailwind CSS
+          多端适配，覆盖小程序全流程开发。
+        </div>
+        <div class="skill-item">
+          <strong>自动化测试与质量：</strong>掌握 Cypress 端到端测试、Jest
+          单元测试，主导核心业务流程覆盖与回归保障；熟悉 ESLint / Prettier /
+          Code Review 规范落地。
+        </div>
+        <div class="skill-item">
+          <strong>数据与接口：</strong>熟悉 Apollo + GraphQL（Schema 设计 /
+          Fragment 复用 / Query Batching）、RESTful API 设计、SSE
+          流式通信、WebSocket / SignalR 实时通信。
+        </div>
+        <div class="skill-item">
+          <strong>CI/CD 与部署：</strong>熟悉 Git Flow 工作流、Code Review
+          规范，参与 CI/CD 自动构建部署流程设计，支持 IIS / Nginx / CDN
+          多种部署形态。
+        </div>
+        <div class="skill-item">
+          <strong>软实力：</strong
+          >CET6，英文文档读写与日常沟通无障碍；具备跨国/跨地域团队协作经验，注重需求拆解、技术方案文档化与团队知识沉淀。
+        </div>
+        <div class="skill-item">
+          <strong>AI 提效：</strong>熟练运用 GitHub Copilot / Cursor / ChatGPT
+          等 AI 工具辅助编码、Code
+          Review、单元测试生成与技术调研，显著提升日常开发与文档输出效率；曾深度参与
+          AI 模型评测与 Prompt 设计，对 AI 工具的能力边界与适用场景有清晰判断。
+        </div>
+      </div>
+
+      <!-- ===== 工作经历与项目经验 ===== -->
+      <div class="section-title">工作经历与项目经验</div>
+
+      <!-- 公司1 -->
+      <div class="company">
+        <div class="company-header">
+          <span class="company-name">Centific技术有限公司</span>
+          <span class="company-role">前端工程师</span>
+          <span class="company-period">2024.11 - 2026.07</span>
+        </div>
+
+        <!-- 项目1-1：重塑为企业级 Web 平台 -->
+        <div class="project">
+          <div class="project-title">Sales Genie 企业级AI销售协作 Web 平台</div>
+          <div class="project-desc">
+            面向企业销售场景的 Web 平台，集成微软 AAD 企业
+            SSO、多语言、实时对话与知识库联动，支持桌面端与移动端，部署于企业内网
+            IIS 环境。
+          </div>
+          <span class="project-tech"
+            >React 18 + Vite 5 + TypeScript + Ant Design + Axios + i18next +
+            MSAL</span
+          >
+          <span class="project-period-inline">2025.10 - 2026.03</span>
+
+          <div class="label">项目职责</div>
+          <ul class="project-list">
+            <li>
+              独立完成从 0 到 1
+              的前端架构设计与实现，涵盖路由鉴权、认证、数据流管理到 UI 层，通过
+              Context API 实现跨层级状态共享。
+            </li>
+            <li>
+              主导
+              <strong>企业 SSO 登录、会话管理、权限控制、知识库</strong
+              >等核心模块的需求分析、技术方案设计与代码实现。
+            </li>
+            <li>
+              搭建 dev / test / prod 三环境管理体系，配置 Vite 环境变量、API
+              代理、统一请求拦截与全局错误处理，支持 IIS 部署。
+            </li>
+          </ul>
+          <div class="label">项目亮点</div>
+          <ul class="project-list">
+            <li>
+              落地
+              <strong>MSAL + 微软 AAD 企业 SSO + Crypto Polyfill</strong>
+              完整方案，实现免密登录、Token
+              自动续期与企业身份合规，满足企业内网安全要求。
+            </li>
+            <li>
+              设计 Context + Ref 混合状态管理架构，解决高频更新场景下频繁
+              re-render 问题，关键页面渲染性能显著提升。
+            </li>
+            <li>
+              基于 AbortController
+              封装统一请求中断机制，避免无效请求堆积与服务端资源浪费。
+            </li>
+            <li>
+              实现响应式布局与多端适配方案，桌面端与移动端共用一套代码库，i18next
+              支持多语言一键切换。
+            </li>
+          </ul>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- 项目1-2：Expedia 重点突出 -->
+        <div class="project">
+          <div class="project-title">
+            Expedia Hotels.com 全球酒店预订平台（SaaS）
+          </div>
+          <div class="project-desc">
+            Expedia
+            集团旗下全球酒店预订服务，跨国团队协作，聚焦预订流程稳定性、扩展性、多币种与多语言国际化能力。
+          </div>
+          <span class="project-tech"
+            >React + Next.js (SSR / SSG) + Apollo + GraphQL + TypeScript +
+            Tailwind + Webpack + CDN</span
+          >
+          <span class="project-period-inline">2024.11 - 2025.09</span>
+
+          <div class="label">项目职责</div>
+          <ul class="project-list">
+            <li>
+              参与酒店预订核心流程开发，聚焦表单交互、房型选择、支付跳转等关键转化路径，确保交易链路稳定。
+            </li>
+            <li>
+              参与国际化改造，实现<strong>多语言切换、多币种本地化、日期/时区格式标准化</strong>，满足全球化业务需求。
+            </li>
+            <li>
+              对接英文需求文档与跨地域研发团队，参与 PR Review 与英文技术沟通。
+            </li>
+          </ul>
+          <div class="label">项目亮点</div>
+          <ul class="project-list">
+            <li>
+              参与酒店详情页与列表页的
+              <strong>Next.js SSR / SSG 渲染逻辑调优</strong
+              >，优化数据预取与服务端状态水合流程，改善 SEO 收录与首屏体验。
+            </li>
+            <li>
+              主导 GraphQL Schema 统一设计与 Apollo Fragment 模块化 + Query
+              Batching，聚合多来源后端数据，<strong
+                >首页渲染时间平均下降约 30%</strong
+              >。
+            </li>
+            <li>
+              搭建 Cypress
+              自动化测试体系，覆盖预订核心路径与回归用例，显著降低上线缺陷率。
+            </li>
+            <li>
+              推动前端代码规范与 PR Review
+              流程优化，提升团队交付质量与可维护性。
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 公司2 -->
+      <div class="company">
+        <div class="company-header">
+          <span class="company-name">深圳市微纪源网络科技有限公司</span>
+          <span class="company-role">前端工程师</span>
+          <span class="company-period">2023.02 - 2024.09</span>
+        </div>
+
+        <!-- 项目2-1 -->
+        <div class="project">
+          <div class="project-title">前端埋点监控 SDK</div>
+          <div class="project-desc">
+            轻量级前端数据采集与监控上报 SDK，支持 PV/UV 自动采集、JS
+            异常捕获、性能指标监控，服务于多个业务线。
+          </div>
+          <span class="project-tech"
+            >TypeScript + Rollup + ES6 + PerformanceObserver</span
+          >
+          <span class="project-period-inline">2024.05 - 2024.09</span>
+
+          <div class="label">项目职责</div>
+          <ul class="project-list">
+            <li>
+              设计高度可配置的埋点采集与上报机制，支持
+              PV、UV、点击、性能、异常等自动与手动采集场景。
+            </li>
+            <li>
+              制定模块分层规范，将采集层、上报层、配置层解耦为独立可插拔模块，便于复用与维护。
+            </li>
+          </ul>
+          <div class="label">项目亮点</div>
+          <ul class="project-list">
+            <li>
+              运行时错误、资源加载失败、Promise
+              异常等多类错误自动捕获与统一上报，提升线上问题定位效率。
+            </li>
+            <li>
+              Rollup 输出 ESM / CommonJS / UMD 多格式，适配不同业务运行环境。
+            </li>
+            <li>
+              PerformanceObserver 采集
+              <strong>FCP / LCP / FID / CLS 核心 Web Vitals 指标</strong
+              >，并支持旧版浏览器降级方案。
+            </li>
+          </ul>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- 项目2-2 -->
+        <div class="project">
+          <div class="project-title">微课小程序（课程电商与直播互动）</div>
+          <div class="project-desc">
+            多功能微课小程序，覆盖付费课程、购物车、支付与直播互动场景，构建完整电商交易闭环。
+          </div>
+          <span class="project-tech"
+            >Taro + React + TypeScript + Webpack + SignalR</span
+          >
+          <span class="project-period-inline">2023.11 - 2024.06</span>
+
+          <div class="label">项目职责</div>
+          <ul class="project-list">
+            <li>
+              全流程交付，主导性能优化、核心模块搭建与通用组件封装，推动代码规范与跨端兼容。
+            </li>
+          </ul>
+          <div class="label">项目亮点</div>
+          <ul class="project-list">
+            <li>
+              独立开发<strong>购物车与支付模块</strong>，兼容微信支付 /
+              支付宝多平台适配，保障支付链路稳定可靠。
+            </li>
+            <li>Taro 分包 + 预加载策略，小程序启动耗时优化至 1.1s。</li>
+            <li>SignalR 长连接实时数据同步，支撑直播与课程互动体验。</li>
+            <li>多级缓存架构 + 弱网/断网离线容错，保障核心功能持续可用。</li>
+            <li>封装无感登录 SDK，支持 UnionID 跨平台身份识别与授权。</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 公司3 -->
+      <div class="company">
+        <div class="company-header">
+          <span class="company-name">深圳亿科数字科技有限公司</span>
+          <span class="company-role">前端工程师</span>
+          <span class="company-period">2020.08 - 2023.02</span>
+        </div>
+
+        <!-- 项目3-1 -->
+        <div class="project">
+          <div class="project-title">如意游戏平台（海外）</div>
+          <div class="project-desc">
+            面向海外市场的跨终端游戏与电商消费平台，集成充值、提现、排行榜、任务系统等核心模块。
+          </div>
+          <span class="project-tech"
+            >React + Hooks + MobX + Webpack + Tailwind + Sentry</span
+          >
+          <span class="project-period-inline">2022.05 - 2023.01</span>
+
+          <div class="label">项目职责</div>
+          <ul class="project-list">
+            <li>
+              主导用户中心、虚拟币充值、排行榜等核心模块开发与前端性能优化。
+            </li>
+          </ul>
+          <div class="label">项目亮点</div>
+          <ul class="project-list">
+            <li>
+              Webpack 优化（splitChunks / Tree Shaking / gzip + CDN），<strong
+                >打包体积减少 42%，首屏缩短近 2s</strong
+              >。
+            </li>
+            <li>
+              SVG + Canvas 高帧率动画模块（requestAnimationFrame），低端设备稳定
+              55fps+ 渲染。
+            </li>
+            <li>
+              Sentry 异常监控 + WebSocket
+              实时通信，支撑线上问题定位与游戏互动体验。
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ===== 教育经历 ===== -->
+      <div class="section-title">教育经历</div>
+      <div class="edu">
+        <span class="edu-school">南昌大学共青学院</span>
+        <span class="edu-major">电子信息工程专业</span>
+        <span class="edu-detail">2016.09 - 2020.07 ｜ 全日制本科</span>
+      </div>
+
+      <!-- ===== 自我评价 / 求职动机 ===== -->
+      <!-- <div class="section-title">自我评价</div>
+    <ul class="project-list">
+      <li>具备 <strong>国际化 SaaS（Expedia）+ 企业级 Web（微软生态）</strong>双重背景，熟悉跨国/跨地域协作与英文工作环境，与星展（DBS）国际化银行文化高度契合。</li>
+      <li>熟悉企业级 SSO、Token 管理、权限分级等安全实践，理解金融业务对<strong>数据安全、合规与稳定性</strong>的高要求，注重代码质量与可审计性。</li>
+      <li>独立交付能力强，能从 0 到 1 完成架构设计、技术选型、性能优化与上线部署；同时具备良好的团队协作意识，乐于沉淀文档与分享。</li>
+    </ul> -->
+    </div>
+  </body>
+</html>

@@ -1,0 +1,635 @@
+<!doctype html>
+<!-- Derived from 前端殷丹玲_简历_202609_全栈版.html: English full-stack version, 2026-09. -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Danling Yin — Full-Stack Engineer Resume</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      @page {
+        size: A4;
+        margin: 6mm 12mm;
+      }
+
+      @media print {
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          background: #fff;
+        }
+
+        .resume {
+          box-shadow: none;
+          margin: 0;
+          padding: 12px 24px;
+        }
+      }
+
+      body {
+        font-family: 'Aptos', 'Helvetica Neue', Arial, sans-serif;
+        font-size: 12px;
+        line-height: 1.48;
+        color: #263238;
+        background: #eef1f3;
+      }
+
+      .resume {
+        max-width: 210mm;
+        margin: 20px auto;
+        padding: 26px 30px 16px;
+        background: #fff;
+        box-shadow: 0 2px 20px rgba(27, 42, 51, 0.09);
+      }
+
+      a {
+        color: #176b87;
+        text-decoration: none;
+      }
+
+      .header {
+        padding-bottom: 13px;
+        margin-bottom: 13px;
+        text-align: center;
+        border-bottom: 2px solid #176b87;
+      }
+
+      .header h1 {
+        color: #17252d;
+        font-size: 27px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        margin-bottom: 4px;
+      }
+
+      .subtitle {
+        margin-bottom: 8px;
+        color: #176b87;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .contact {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 4px 15px;
+        color: #46545b;
+        font-size: 11px;
+      }
+
+      .contact span::before {
+        content: '';
+        display: inline-block;
+        width: 3px;
+        height: 3px;
+        margin: 0 5px 3px 0;
+        border-radius: 50%;
+        background: #176b87;
+      }
+
+      .summary {
+        padding: 8px 13px;
+        margin-bottom: 13px;
+        border-left: 3px solid #176b87;
+        border-radius: 0 4px 4px 0;
+        background: #f0f6f7;
+        color: #33444c;
+        font-size: 11.5px;
+        line-height: 1.58;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding-bottom: 4px;
+        margin: 14px 0 9px;
+        border-bottom: 1px solid #dce5e8;
+        color: #17252d;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+      }
+
+      .section-title::before {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 15px;
+        border-radius: 2px;
+        background: #176b87;
+      }
+
+      .skills-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2px;
+      }
+
+      .skill-item {
+        position: relative;
+        padding-left: 13px;
+        color: #3f5058;
+        font-size: 11px;
+        line-height: 1.5;
+      }
+
+      .skill-item::before {
+        content: '';
+        position: absolute;
+        top: 7px;
+        left: 0;
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: #176b87;
+      }
+
+      .skill-item strong {
+        color: #1c343e;
+        font-weight: 700;
+      }
+
+      .company {
+        margin-bottom: 11px;
+      }
+
+      .company-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 2px 12px;
+        margin-bottom: 2px;
+      }
+
+      .company-name {
+        color: #17252d;
+        font-size: 13.5px;
+        font-weight: 700;
+      }
+
+      .company-role {
+        color: #176b87;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .company-period {
+        color: #687981;
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      .project {
+        padding-left: 11px;
+        margin: 5px 0 8px;
+        border-left: 2px solid #dce5e8;
+      }
+
+      .project-title {
+        margin-bottom: 2px;
+        color: #243840;
+        font-size: 12.5px;
+        font-weight: 700;
+      }
+
+      .project-desc {
+        margin-bottom: 4px;
+        color: #61727a;
+        font-size: 10.8px;
+        line-height: 1.48;
+      }
+
+      .project-tech {
+        display: inline-block;
+        padding: 1px 7px;
+        margin-bottom: 4px;
+        border: 1px solid #d5e5e8;
+        border-radius: 3px;
+        background: #f1f8f9;
+        color: #176b87;
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      .project-period-inline {
+        margin-left: 6px;
+        color: #718188;
+        font-size: 10px;
+      }
+
+      .label {
+        margin: 4px 0 1px;
+        color: #263e47;
+        font-size: 10.8px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+      }
+
+      .project-list {
+        padding: 0;
+        list-style: none;
+      }
+
+      .project-list li {
+        position: relative;
+        padding-left: 13px;
+        margin-bottom: 1px;
+        color: #35474f;
+        font-size: 11px;
+        line-height: 1.48;
+      }
+
+      .project-list li::before {
+        content: '–';
+        position: absolute;
+        left: 0;
+        color: #176b87;
+        font-weight: 700;
+      }
+
+      .project-list strong {
+        color: #176b87;
+        font-weight: 700;
+      }
+
+      .divider {
+        border: 0;
+        border-top: 1px dashed #dce5e8;
+        margin: 7px 0;
+      }
+
+      .edu {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 4px 12px;
+      }
+
+      .edu-school {
+        color: #243840;
+        font-size: 12.5px;
+        font-weight: 700;
+      }
+
+      .edu-major {
+        color: #50636b;
+        font-size: 11.5px;
+      }
+
+      .edu-detail {
+        color: #718188;
+        font-size: 10.8px;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="resume">
+      <header class="header">
+        <h1>DANLING YIN</h1>
+        <div class="subtitle">
+          Full-Stack Engineer · Frontend-led · AI Engineering
+        </div>
+        <div class="contact">
+          <span>+86 150-1287-0970</span>
+          <span>y370900736@163.com</span>
+          <span>CET-6 · Working-level English</span>
+          <span
+            ><a
+              href="https://github.com/yuebanyin/engineering-notes"
+              target="_blank"
+              >GitHub Technical Notes</a
+            ></span
+          >
+        </div>
+      </header>
+
+      <section class="summary">
+        Frontend-led full-stack engineer with 6 years of experience building and
+        optimizing production systems across enterprise SaaS, AI applications,
+        cross-platform mini-programs, and frontend SDKs. Strong in React and
+        TypeScript, with practical Node.js, Python, Docker, and CI/CD experience
+        for end-to-end delivery. Currently engaged via Centific with Microsoft's
+        Core AI Training Team, engineering benchmark pipelines and evaluating
+        coding agents across GPT, Claude, and Gemini. Comfortable owning
+        architecture, quality gates, and delivery in international teams.
+      </section>
+
+      <div class="section-title">Technical Skills</div>
+      <div class="skills-grid">
+        <div class="skill-item">
+          <strong>Frontend Engineering:</strong> React 18, TypeScript, Hooks,
+          Context, Fiber rendering concepts, Redux / MobX, Vue ecosystem,
+          Next.js App Router, SSR / SSG / ISR, i18next, Taro.
+        </div>
+        <div class="skill-item">
+          <strong>Backend &amp; APIs:</strong> Node.js, Next.js API Routes,
+          Express, BFF design, RESTful APIs, GraphQL schema design, Apollo
+          Client, SSE, WebSocket, and SignalR.
+        </div>
+        <div class="skill-item">
+          <strong>Python &amp; Automation:</strong> Evaluation pipelines, API
+          integration, log normalization, data processing, state-machine
+          control, failure handling, retries, and structured validation reports.
+        </div>
+        <div class="skill-item">
+          <strong>Build &amp; Delivery:</strong> Webpack, Vite, Rollup, npm
+          package publishing, pnpm workspaces, Azure DevOps, Git Flow, Docker
+          image lifecycle, IIS, Nginx, and CDN delivery.
+        </div>
+        <div class="skill-item">
+          <strong>Testing &amp; Quality:</strong> Cypress E2E, Jest, ESLint,
+          Prettier, code review, multi-environment release workflows, and Build
+          / Sanity Check quality gates.
+        </div>
+        <div class="skill-item">
+          <strong>AI Engineering:</strong> Multi-model evaluation, prompt
+          design, annotation rubrics, benchmark case expansion, Dockerized
+          execution, and AI-assisted development with Claude Code, GitHub
+          Copilot, and Cursor.
+        </div>
+        <div class="skill-item">
+          <strong>Security &amp; Performance:</strong> Microsoft Entra ID / MSAL
+          SSO, OAuth2 / JWT, CSRF / XSS awareness, Crypto polyfills, Core Web
+          Vitals, bundle optimization, caching, and runtime monitoring.
+        </div>
+      </div>
+
+      <div class="section-title">Professional Experience</div>
+
+      <div class="company">
+        <div class="company-header">
+          <span class="company-name">Microsoft — Core AI Training Team</span>
+          <span class="company-role"
+            >AI Agent Evaluation Engineer (engaged via Centific)</span
+          >
+          <span class="company-period">Oct 2025 – July 2026</span>
+        </div>
+
+        <div class="project">
+          <div class="project-title">
+            Terminal-Bench2 Evaluation Pipeline &amp; Benchmark Expansion
+          </div>
+          <div class="project-desc">
+            Engineering and evaluation workflow for coding agents, covering
+            reproducible case execution, multi-model comparison, and benchmark
+            quality control.
+          </div>
+          <span class="project-tech"
+            >Python · Docker · Shell · Azure DevOps · Prompt Engineering</span
+          >
+
+          <ul class="project-list">
+            <li>
+              Built Python automation for log normalization, status / exit-code
+              / duration semantics, API calls, failure handling, and retry
+              control.
+            </li>
+            <li>
+              Containerized evaluation cases with Docker, covering base-image
+              reuse, image tagging, registry publishing, and isolated execution.
+            </li>
+            <li>
+              Designed a two-gate delivery process:
+              <strong>Build</strong> validates reproducible artifacts;
+              <strong>Sanity Check</strong> launches the container and validates
+              actual case behavior.
+            </li>
+            <li>
+              Expanded benchmark cases through seed-case analysis and
+              sibling-case design, keeping cases measurable, independent, and
+              non-redundant.
+            </li>
+            <li>
+              Conducted cross-model evaluation across GPT, Claude, and Gemini
+              using multi-dimensional rubrics for UI, bugs, features,
+              documentation, and safety.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="company">
+        <div class="company-header">
+          <span class="company-name">Centific Technology Co., Ltd.</span>
+          <span class="company-role">Frontend Engineer</span>
+          <span class="company-period">Nov 2024 – July 2026</span>
+        </div>
+
+        <div class="project">
+          <div class="project-title">
+            Sales Genie — Enterprise AI Sales Collaboration Platform
+          </div>
+          <div class="project-desc">
+            AI sales platform integrating Microsoft Entra ID SSO, Dify LLM
+            services, SSE streaming conversations, knowledge-base workflows, and
+            responsive desktop / mobile experiences.
+          </div>
+          <span class="project-tech"
+            >React 18 · Vite 5 · TypeScript · Ant Design X · MSAL · SSE</span
+          >
+          <span class="project-period-inline">Apr 2025 – Sep 2025</span>
+
+          <ul class="project-list">
+            <li>
+              Architected and delivered the frontend from 0 to 1, covering
+              routing, authentication, state management, data flow, and UI with
+              Context API.
+            </li>
+            <li>
+              Implemented enterprise <strong>MSAL + Entra ID SSO</strong> with
+              Crypto polyfill fallbacks, token renewal, and passwordless
+              authentication support.
+            </li>
+            <li>
+              Built an
+              <strong>AbortController-based SSE cancellation</strong> flow to
+              stop abandoned requests and reduce unnecessary server work.
+            </li>
+            <li>
+              Designed a Context + Ref hybrid state model to avoid excessive
+              re-renders during high-frequency streaming updates.
+            </li>
+            <li>
+              Established dev / test / production configuration with Vite
+              environment variables, API proxies, request interceptors, and
+              unified error handling for IIS deployment.
+            </li>
+          </ul>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="project">
+          <div class="project-title">
+            Expedia Hotels.com — Global Hotel Booking Platform
+          </div>
+          <div class="project-desc">
+            Global hotel booking SaaS serving international markets, with a
+            focus on booking-flow stability, localization, data composition, and
+            rendering performance.
+          </div>
+          <span class="project-tech"
+            >React · Next.js · Apollo · GraphQL · TypeScript · Webpack ·
+            CDN</span
+          >
+          <span class="project-period-inline">Nov 2024 – Mar 2025</span>
+
+          <ul class="project-list">
+            <li>
+              Contributed to hotel detail and listing flows with Next.js SSR /
+              SSG tuning, data prefetching, and server-state hydration.
+            </li>
+            <li>
+              Unified GraphQL schema design with Apollo Fragment modularization
+              and Query Batching, reducing homepage render time by
+              <strong>approximately 30%</strong>.
+            </li>
+            <li>
+              Built Cypress E2E coverage for core booking paths and collaborated
+              with international teams through English requirements and PR
+              reviews.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="company">
+        <div class="company-header">
+          <span class="company-name"
+            >Shenzhen Weijiyuan Network Technology Co., Ltd.</span
+          >
+          <span class="company-role">Frontend Engineer</span>
+          <span class="company-period">Feb 2023 – Sep 2024</span>
+        </div>
+
+        <div class="project">
+          <div class="project-title">
+            Frontend Analytics &amp; Monitoring SDK
+          </div>
+          <div class="project-desc">
+            Configurable SDK for PV / UV collection, runtime error capture, and
+            Core Web Vitals monitoring, published as an internal npm package.
+          </div>
+          <span class="project-tech"
+            >TypeScript · Rollup · ES6+ · PerformanceObserver · npm</span
+          >
+          <span class="project-period-inline">May 2024 – Sep 2024</span>
+
+          <ul class="project-list">
+            <li>
+              Decoupled collection, reporting, and configuration into
+              independent modules with automatic and manual tracking modes.
+            </li>
+            <li>
+              Unified capture for runtime exceptions, resource failures, and
+              unhandled Promise rejections with a normalized reporting schema.
+            </li>
+            <li>
+              Published ESM / CommonJS / UMD bundles and collected FCP, LCP,
+              FID, and CLS with graceful fallback for older browsers.
+            </li>
+          </ul>
+        </div>
+
+        <hr class="divider" />
+
+        <div class="project">
+          <div class="project-title">
+            Micro-Course Mini-Program — Commerce &amp; Live Interaction
+          </div>
+          <div class="project-desc">
+            Cross-platform mini-program covering paid courses, cart, payments,
+            and live interactive sessions.
+          </div>
+          <span class="project-tech"
+            >Taro · React · TypeScript · Webpack · SignalR</span
+          >
+          <span class="project-period-inline">Nov 2023 – Jun 2024</span>
+
+          <ul class="project-list">
+            <li>
+              Delivered cart and payment modules for WeChat Pay and Alipay, with
+              cross-platform compatibility and transaction-flow stability.
+            </li>
+            <li>
+              Used Taro sub-package splitting and preloading to reduce cold
+              start time to <strong>approximately 1.1 seconds</strong>; added
+              SignalR for live synchronization.
+            </li>
+            <li>
+              Implemented multi-level caching, weak-network / offline fallbacks,
+              and a UnionID-based silent-login SDK.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="company">
+        <div class="company-header">
+          <span class="company-name"
+            >Shenzhen Yike Digital Technology Co., Ltd.</span
+          >
+          <span class="company-role">Frontend Engineer</span>
+          <span class="company-period">Aug 2020 – Feb 2023</span>
+        </div>
+
+        <div class="project">
+          <div class="project-title">
+            RuYi Gaming Platform — International Consumer Product
+          </div>
+          <div class="project-desc">
+            Cross-device gaming and commerce platform with virtual-currency
+            top-up, leaderboards, quests, and real-time gameplay interactions.
+          </div>
+          <span class="project-tech"
+            >React · Hooks · MobX · Webpack · Tailwind CSS · Sentry ·
+            WebSocket</span
+          >
+          <span class="project-period-inline">May 2022 – Jan 2023</span>
+
+          <ul class="project-list">
+            <li>
+              Owned user center, virtual-currency top-up, and leaderboard
+              modules while driving frontend performance optimization.
+            </li>
+            <li>
+              Optimized Webpack with splitChunks, Tree Shaking, gzip, and CDN
+              delivery, reducing bundle size by
+              <strong>approximately 42%</strong> and first-screen time by nearly
+              2 seconds.
+            </li>
+            <li>
+              Built SVG + Canvas animation modules with requestAnimationFrame,
+              sustaining <strong>55+ FPS</strong> on low-end devices; integrated
+              Sentry and WebSocket for monitoring and real-time events.
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-title">Education</div>
+      <div class="edu">
+        <span class="edu-school">Gongqing College of Nanchang University</span>
+        <span class="edu-major"
+          >B.E. in Electronic Information Engineering</span
+        >
+        <span class="edu-detail">Sep 2016 – Jul 2020 · Full-time · CET-6</span>
+      </div>
+    </main>
+  </body>
+</html>

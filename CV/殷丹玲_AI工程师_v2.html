@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>殷丹玲 - AI 应用 / Agent 工程师简历</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      @page {
+        size: A4;
+        margin: 6mm 12mm;
+      }
+
+      @media print {
+        html,
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+          background: #fff !important;
+        }
+        .resume {
+          box-shadow: none;
+          margin: 0;
+          padding: 12px 24px;
+          background: #fff !important;
+        }
+      }
+
+      body {
+        font-family:
+          'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+        font-size: 13px;
+        line-height: 1.6;
+        color: #2d3748;
+        background: #f0f2f5;
+      }
+
+      .resume {
+        max-width: 210mm;
+        margin: 20px auto;
+        background: #ffffff;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.08);
+        padding: 28px 30px 16px 30px;
+      }
+
+      a {
+        color: #3182ce;
+        text-decoration: none;
+      }
+
+      .header {
+        text-align: center;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #3182ce;
+        margin-bottom: 10px;
+      }
+
+      .header h1 {
+        font-size: 26px;
+        font-weight: 700;
+        color: #1a202c;
+        letter-spacing: 4px;
+        margin-bottom: 4px;
+      }
+
+      .header .subtitle {
+        font-size: 14px;
+        color: #3182ce;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
+
+      .header .contact {
+        display: flex;
+        justify-content: center;
+        flex-wrap: nowrap;
+        gap: 4px 14px;
+        font-size: 11.5px;
+        color: #2d3748;
+      }
+
+      .header .contact span::before {
+        content: '';
+        display: inline-block;
+        width: 3px;
+        height: 3px;
+        background: #3182ce;
+        border-radius: 50%;
+        margin-right: 4px;
+        vertical-align: middle;
+      }
+
+      .summary {
+        background: #f0f5fa;
+        border-left: 3px solid #2b6cb0;
+        padding: 6px 14px;
+        margin-bottom: 10px;
+        font-size: 12.5px;
+        color: #2d3748;
+        line-height: 1.6;
+        border-radius: 0 4px 4px 0;
+      }
+
+      .section-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a202c;
+        padding-bottom: 4px;
+        border-bottom: 1.5px solid #e2e8f0;
+        margin-bottom: 8px;
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .section-title::before {
+        content: '';
+        display: inline-block;
+        width: 4px;
+        height: 16px;
+        background: #3182ce;
+        border-radius: 2px;
+      }
+
+      .skills-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 3px;
+      }
+
+      .skill-item {
+        font-size: 12px;
+        line-height: 1.55;
+        color: #2d3748;
+        padding-left: 14px;
+        position: relative;
+      }
+
+      .skill-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 9px;
+        width: 5px;
+        height: 5px;
+        background: #3182ce;
+        border-radius: 50%;
+      }
+
+      .skill-item strong {
+        color: #2d3748;
+        font-weight: 600;
+      }
+
+      .company {
+        margin-bottom: 8px;
+      }
+
+      .company-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 2px;
+        flex-wrap: wrap;
+      }
+
+      .company-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a202c;
+      }
+
+      .company-role {
+        font-size: 13px;
+        color: #3182ce;
+        font-weight: 600;
+      }
+
+      .company-period {
+        font-size: 12px;
+        color: #718096;
+        font-style: italic;
+        white-space: nowrap;
+      }
+
+      .project {
+        margin-top: 6px;
+        margin-bottom: 8px;
+        padding-left: 12px;
+        border-left: 2px solid #e2e8f0;
+      }
+
+      .project-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 2px;
+      }
+
+      .project-desc {
+        font-size: 11.5px;
+        color: #4a5568;
+        line-height: 1.5;
+        margin-bottom: 4px;
+      }
+
+      .project-tech {
+        display: inline-block;
+        font-size: 11px;
+        color: #2b6cb0;
+        background: #dbeafe;
+        padding: 1px 8px;
+        border-radius: 3px;
+        margin-bottom: 5px;
+        font-weight: 500;
+      }
+
+      .project-period-inline {
+        font-size: 11px;
+        color: #718096;
+        margin-left: 6px;
+      }
+
+      .label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #2d3748;
+        margin-top: 5px;
+        margin-bottom: 2px;
+      }
+
+      .project-list {
+        list-style: none;
+        padding: 0;
+      }
+
+      .project-list li {
+        font-size: 12px;
+        line-height: 1.55;
+        color: #2d3748;
+        padding-left: 14px;
+        position: relative;
+        margin-bottom: 1px;
+      }
+
+      .project-list li::before {
+        content: '▸';
+        position: absolute;
+        left: 0;
+        color: #3182ce;
+        font-size: 11px;
+      }
+
+      .edu {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .edu-school {
+        font-size: 13px;
+        font-weight: 700;
+        color: #2d3748;
+      }
+
+      .edu-major {
+        font-size: 12.5px;
+        color: #4a5568;
+      }
+
+      .edu-detail {
+        font-size: 11.5px;
+        color: #718096;
+        font-style: italic;
+      }
+
+      .divider {
+        border: none;
+        border-top: 1px dashed #e2e8f0;
+        margin: 5px 0;
+      }
+
+      .links {
+        font-size: 11.5px;
+        color: #4a5568;
+        margin-top: 4px;
+      }
+      .links a {
+        margin-right: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="resume">
+      <!-- ===== 头部 ===== -->
+      <div class="header">
+        <h1>殷 丹 玲</h1>
+        <div class="subtitle">
+          AI 应用 / Agent 工程师 ｜ 6 年工程经验，1 年 AI 工程化（微软 Core AI
+          Team）
+        </div>
+        <div class="contact">
+          <span>15012870970</span>
+          <span>y370900736@163.com</span>
+          <span>CET6 / 英语日常</span>
+        </div>
+        <div class="links">
+          <a href="https://github.com/">GitHub</a>
+          <a href="#">技术博客 / Engineering Notes</a>
+        </div>
+      </div>
+
+      <!-- ===== 个人简介 ===== -->
+      <div class="summary">
+        6 年工程交付经验，过去 1 年深度聚焦 AI Agent
+        评测与应用工程化。现就职于微软 Core AI Training
+        Team，主导多模型横向评测体系（Elo / pass@k 量化指标）、Terminal-Bench2
+        端到端 Pipeline（Python + Docker）与系统化用例扩展。具备 LLM
+        应用全栈独立交付经验（Dify + SSE + MSAL），对 Prompt
+        工程、上下文管理、Token 成本与流式架构有实战沉淀。深度使用 Claude Code /
+        Copilot / Cursor 进行 Agent-Native 开发，能创建自定义 Skills、编排
+        SubAgent 工作流，将复杂任务拆解为可被 Agent 稳定执行的
+        Pipeline。前端全栈背景（React / Vue / TS / Node）作为产品化能力补充。
+      </div>
+
+      <!-- ===== 专业技能 ===== -->
+      <div class="section-title">专业技能</div>
+      <div class="skills-grid">
+        <div class="skill-item">
+          <strong>LLM 应用与 Agent 工程化：</strong
+          >多模型横向评测体系设计（Rubric / Elo / pass@k）、Benchmark Pipeline
+          构建（Build + Sanity Check 双重质量门禁）、Docker 容器化评测环境、Seed
+          Case 分析与 Sub Case 系统化扩展（Extend-K 策略）。
+        </div>
+        <div class="skill-item">
+          <strong>LLM 应用开发：</strong>Prompt 模板化管理、多轮上下文裁剪与
+          Token 成本控制、SSE 流式响应与中断（AbortController）、Function
+          Calling / Tool Use、知识库切片与检索策略、幻觉与 Guardrails 基础实践。
+        </div>
+        <div class="skill-item">
+          <strong>Agent-Native Development（Vibe Coding）：</strong>Claude Code
+          / GitHub Copilot / Cursor 深度使用者，能编写自定义 Skills
+          封装领域知识与工作流，熟悉 SubAgent 编排与 MCP
+          协议，能将业务需求拆解为可被 Agent 稳定执行的步骤。
+        </div>
+        <div class="skill-item">
+          <strong>Python 与 Pipeline 工程：</strong>独立设计并实现 Python 自动化
+          Pipeline（数据处理、文件操作、API
+          调用、日志解析、错误重试），熟悉脚本调试与性能优化，配合 AI
+          辅助编码提升交付效率。
+        </div>
+        <div class="skill-item">
+          <strong>前端与全栈基础：</strong>熟练 React 18（Fiber /
+          性能优化）、Vue 全家桶；TypeScript / Node.js / GraphQL
+          (Apollo)；具备前后端全链路与企业级 SSO（MSAL）交付能力。
+        </div>
+        <div class="skill-item">
+          <strong>工程化与 DevOps：</strong>Webpack / Vite / Rollup
+          构建优化；Docker 镜像构建与管理；Azure DevOps CI/CD；Git Flow + Code
+          Review；Cypress E2E + Jest 单元测试；自研前端监控 SDK。
+        </div>
+      </div>
+
+      <!-- ===== 工作经历与项目经验 ===== -->
+      <div class="section-title">工作经历与项目经验</div>
+
+      <!-- 公司1: Core AI Training Team -->
+      <div class="company">
+        <div class="company-header">
+          <span class="company-name">微软 Core AI Training Team</span>
+          <span class="company-role">AI Agent Training Engineer</span>
+          <span class="company-period">2025.10 - 2026.07</span>
+        </div>
+
+        <!-- 项目1-1: 多模型评测 -->
+        <div class="project">
+          <div class="project-title">多模型能力评估与排名体系</div>
+          <div class="project-desc">
+            面向 GPT、Claude Opus、Gemini 等主流模型在 VS Code
+            集成环境中的能力对比，建立可量化、可复现的评测基线，输出洞察反哺模型训练。
+          </div>
+          <span class="project-tech"
+            >Python · Prompt Engineering · Eval Framework · Statistical
+            Rubric</span
+          >
+
+          <div class="label">核心工作</div>
+          <ul class="project-list">
+            <li>
+              设计 5 维度标准化评估 Rubric（UI Case / Bug 修复 / Feature 实现 /
+              文档生成 / 安全识别），覆盖 N 个模型 × M
+              个任务，引入多轮采样消除随机性。
+            </li>
+            <li>
+              引入 Elo / pass@k
+              等量化指标，输出能力雷达图、优缺点对照表与综合排名报告，识别模型在长上下文与代码精确度等维度的能力边界。
+            </li>
+            <li>
+              评测洞察直接反馈模型训练团队，形成「评测 → 发现 → 优化 →
+              再评测」闭环。
+            </li>
+          </ul>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- 项目1-2: TB2 Pipeline + Sub Cases + IT_Bench -->
+        <div class="project">
+          <div class="project-title">
+            Terminal-Bench2 Pipeline 构建与测试用例扩展
+          </div>
+          <div class="project-desc">
+            面向 AI Agent 终端操作能力的基准测试框架，独立设计并实现端到端
+            Pipeline，系统化扩展测试用例并落地双重质量门禁。
+          </div>
+          <span class="project-tech"
+            >Python · Docker · Shell · Pipeline Engineering · Eval Infra</span
+          >
+
+          <div class="label">核心工作</div>
+          <ul class="project-list">
+            <li>
+              <strong>Build Pipeline：</strong>Case Definition → Dockerfile
+              Generation → Image Build → Registry Push；<strong
+                >Sanity Check Pipeline：</strong
+              >Launch Container → Execute Case → Validate Output → Pass/Fail
+              Report。
+            </li>
+            <li>
+              独立设计并实现 Python 自动化脚本（配合 AI
+              辅助编码），涵盖日志规范化、输出语义定义（status / exit_code /
+              duration / validation_result）、错误处理与重试机制。
+            </li>
+            <li>
+              Docker 容器化实现每个 case
+              独立运行环境，基础镜像标准化，构建产物可追溯（tag + metadata）。
+            </li>
+            <li>
+              对 Seed Case 执行 5 维度深度分析，制定 Extend-K 扩展策略（同层同维
+              / 知识关联 /
+              独立可测），覆盖系统管理、网络配置、脚本自动化等能力域。
+            </li>
+            <li>
+              落地 Build ✅ + Sanity Check ✅ 双重质量门禁，仅通过双重验证的
+              case 计入有效交付。
+            </li>
+            <li>
+              完成 IT_Bench 差异化研究，明确其与 TB2
+              在环境构建、跨服务验证、生命周期上的架构差异，推动独立 Pipeline
+              方案设计。
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 公司2: Centific -->
+      <div class="company" style="page-break-before: always; padding-top: 20px">
+        <div class="company-header">
+          <span class="company-name">Centific技术有限公司</span>
+          <span class="company-role">AI 应用 / 全栈工程师</span>
+          <span class="company-period">2024.11 - 2026.07</span>
+        </div>
+
+        <!-- 项目: Sales Genie -->
+        <div class="project">
+          <div class="project-title">Sales Genie · 企业级 AI 销售助手平台</div>
+          <div class="project-desc">
+            独立从 0 到 1 交付企业级 LLM 对话产品，集成 Dify 大语言模型、微软
+            AAD 认证与实时流式对话，支持多语言 / 多端 / 知识库联动。
+          </div>
+          <span class="project-tech"
+            >Dify · React 18 · Vite 5 · Ant Design X · SSE · MSAL ·
+            i18next</span
+          >
+          <span class="project-period-inline">2025.10 - 2026.03</span>
+
+          <div class="label">LLM 应用层亮点</div>
+          <ul class="project-list">
+            <li>
+              <strong>Prompt 模板化管理：</strong>沉淀场景化 Prompt 库（销售话术
+              / 客户分析 / 产品问答），支持变量注入与多语言切换。
+            </li>
+            <li>
+              <strong>上下文与 Token 成本治理：</strong
+              >多轮对话上下文裁剪策略（滑动窗口 + 摘要），结合 Token
+              计量监控控制单轮成本。
+            </li>
+            <li>
+              <strong>知识库联动：</strong>对接 Dify
+              Dataset，按业务域分库切片，前端按场景动态切换知识源。
+            </li>
+            <li>
+              <strong>流式架构：</strong>基于 AbortController 实现 SSE
+              流式请求中断；Context + Ref 混合状态管理消除流式 re-render
+              性能问题。
+            </li>
+          </ul>
+
+          <div class="label">工程交付亮点</div>
+          <ul class="project-list">
+            <li>
+              独立完成全栈架构设计（路由 / 认证 / 数据流 / UI），落地 MSAL 企业
+              SSO + Crypto Polyfill 兼容方案。
+            </li>
+            <li>搭建 dev/test/prod 三环境管理体系，支持 IIS 生产部署。</li>
+          </ul>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- 项目: Expedia -->
+        <div class="project">
+          <div class="project-title">Expedia Hotels.com（国际化 SaaS）</div>
+          <div class="project-desc">
+            Expedia 集团旗下全球酒店预订服务，聚焦预订流程性能优化与国际化。
+          </div>
+          <span class="project-tech"
+            >React · Apollo · TypeScript · Webpack · CDN</span
+          >
+          <span class="project-period-inline">2024.11 - 2025.09</span>
+
+          <div class="label">项目亮点</div>
+          <ul class="project-list">
+            <li>
+              Apollo Fragment 模块化 + Query Batching，首页渲染时间下降约 30%。
+            </li>
+            <li>
+              搭建 Cypress 自动化测试体系覆盖关键预订路径；主导 GraphQL Schema
+              统一设计，聚合多来源后端数据。
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 公司3: 微纪源 -->
+      <div class="company">
+        <div class="company-header">
+          <span class="company-name">深圳市微纪源网络科技有限公司</span>
+          <span class="company-role">前端工程师</span>
+          <span class="company-period">2023.02 - 2024.09</span>
+        </div>
+
+        <div class="project">
+          <div class="project-title">埋点监控 SDK（TypeScript + Rollup）</div>
+          <div class="project-desc">
+            设计轻量级前端监控 SDK，PerformanceObserver 采集
+            FCP/LCP/FID/CLS，Rollup 多格式输出，封装 addReplaceListener
+            统一注入埋点。
+          </div>
+        </div>
+        <hr class="divider" />
+        <div class="project">
+          <div class="project-title">微课小程序（Taro + React）</div>
+          <div class="project-desc">
+            全流程交付多功能小程序，Taro 分包策略启动优化至 1.1s，SignalR
+            实时通信 + 多级缓存离线容错 + 多平台支付适配。
+          </div>
+        </div>
+      </div>
+
+      <!-- 公司4: 亿科 -->
+      <div class="company">
+        <div class="company-header">
+          <span class="company-name">深圳亿科数字科技有限公司</span>
+          <span class="company-role">前端工程师</span>
+          <span class="company-period">2020.08 - 2023.02</span>
+        </div>
+
+        <div class="project">
+          <div class="project-title">如意游戏平台（React + MobX）</div>
+          <div class="project-desc">
+            海外游戏平台核心开发，Webpack 构建优化打包体积减少 42%，SVG + Canvas
+            高帧率动画，WebSocket 实时通信 + Sentry 监控。
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 教育经历 ===== -->
+      <div class="section-title">教育经历</div>
+      <div class="edu">
+        <span class="edu-school">南昌大学共青学院</span>
+        <span class="edu-major">电子信息工程专业</span>
+        <span class="edu-detail">2016.09 - 2020.07 ｜ 全日制本科 ｜ CET6</span>
+      </div>
+    </div>
+  </body>
+</html>
