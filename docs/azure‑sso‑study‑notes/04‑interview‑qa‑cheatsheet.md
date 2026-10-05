@@ -1,6 +1,6 @@
-# 面试问答速查小抄
+# 面试问答速查
 
-> 分为中文思路 + 简短英文口语版本；面向汇丰二面，围绕SSO、Azure、MSAL、Easy‑Auth。
+> 分为中文思路 + 简短英文口语版本；面向二面，围绕SSO、Azure、MSAL、Easy‑Auth。
 > 提示：面试不要死记硬背，抓住关键词，用自己的话讲出来即可。
 
 ## Q1：What is difference between OAuth2.0 and OIDC?
@@ -107,6 +107,46 @@ localStorage可被JS读取，存在XSS跨站脚本攻击风险，如果页面存
 
 【英文口语】
 localStorage can be read by JavaScript. It brings XSS risk. If XSS vulnerability exists, attacker may steal tokens and impersonate user identity.
+
+## Q11：MSAL-JS localStorage 存 token，XSS 风险，行业有哪些防范手段（汇丰面试高频，重点）
+
+风险根源：localStorage 可以被 JS 读取。一旦页面存在 XSS 漏洞，攻击者注入恶意 JS，就可以读取 localStorage 里面的 id_token /access_token，拿到身份凭证，调用后端 API。
+
+> ⚠️注意：HttpOnly Cookie 不受 XSS 读取，这是核心差异。
+
+### ✅ 工程上的防护手段（按优先级排序，面试直接背）
+
+1. **严格 CSP 内容安全策略（最高优先级）**
+   响应头 `Content-Security-Policy`，禁止未授信外部脚本执行，阻止恶意 JS 注入。限制 script 来源，禁止 inline 脚本、eval。**CSP 是抵御 XSS 最核心防线**。
+2. **缩短 access_token 有效期**
+   Entra ID 默认 1 小时。越短越好，例如 20~30 分钟。就算 token 被盗，存活窗口很短，攻击可用时间有限。
+
+> Refresh token 生命周期可以单独配置，同时开启 refresh token 轮转。一旦旧 refresh token 被窃取，使用一次就会作废。
+
+3. **开启 Token 绑定 / 客户端证明（CAE，Entra Continuous Access Evaluation 持续访问评估）**
+   CAE：可以根据事件（用户改密码、账号注销）立刻吊销 token，不用等 token 过期。银行 / 企业内部系统常用。
+4. **输入过滤 + 输出编码**
+   前端所有用户输入渲染时做转义，避免 DOM XSS；不要使用`innerHTML`、`eval`、`document.write`等危险 API。Vue/React 默认会转义，但是`dangerouslySetInnerHTML`一定要严格管控。
+5. **子域名隔离**
+   不要把不受信任的业务、文档预览放在和 SPA 同一个域名；子域名之间可以设置隔离，防止子域名漏洞偷主域名 localStorage。
+6. **监控 + 异常检测**
+   后端鉴权日志：检测异常 IP、异常设备、异地登录，发现异常直接拒绝请求。
+7. **尽量最小化 token 权限（最小权限原则）**
+   access_token 里面 scope 只申请必要权限，遵循最小权限。就算 token 泄露，攻击者能调用的接口权限有限。
+
+### ❗无法根除，只能降低风险
+
+> 重点面试话术：**这些措施只能降低 XSS 带来的危害，不能完全消除风险。如果业务是高敏感场景（金融），BFF 架构是更稳妥的方案，直接不让 JS 接触 token。**
+
+### 简短英文面试脚本
+
+When we store tokens in localStorage with MSAL-JS, XSS is the main risk. We mitigate risk with multiple layers:
+
+1. Use strict CSP header to block unauthorized scripts.
+2. Shorten access token lifetime, enable refresh token rotation and CAE continuous access evaluation.
+3. Avoid unsafe DOM APIs, sanitize user input.
+4. Apply least privilege principle for token scopes.
+   But these methods only reduce risk, not eliminate it completely. For high-sensitive financial systems, BFF architecture is better, raw tokens never expose to frontend JS.
 
 ## 个人面试自我提醒清单
 

@@ -10,7 +10,6 @@
 
 1. 用户访问业务站点A，未登录；A做302重定向跳转至IdP服务（例如login.microsoftonline.com）。
 2. 用户在IdP页面输入账号密码完成登录；IdP在浏览器写入**归属IdP域名的会话Cookie**。
-   > 💡我的当时误区：我曾经以为这个Cookie是A网站生成，再共享给B网站。
    > ✅纠正：Cookie域名属于IdP，不属于A，也不属于B。A/B业务站点无法读取这条Cookie。
 3. IdP使用私钥签发id_token，通过重定向回调回到A站点配置好的白名单redirect‑uri。
 4. A站点校验token签名、签发者、受众、过期时间，校验通过，完成A网站登录。
@@ -40,12 +39,12 @@
 
 ## 3. JWT 理解
 
-JWT格式三部分用`.`分割：`Header.Payload.Signature`
+JWT（JSON Web Token）格式三部分用`.`分割：`Header.Payload.Signature`
 
-1. Header：签名算法，例如RS256（非对称）
-2. Payload：存放claims（iss签发方、sub用户id、aud受众、exp过期时间）
+1. Header 头部：签名算法，例如RS256（非对称）、令牌类型。Base64 编码
+2. Payload 载荷：存放claims（iss签发方、sub用户id、aud受众、exp过期时间）
    > ⚠️Payload是Base64URL编码，**不是加密！任何人可以解码查看内容，不能存放密码等敏感信息。签名只能防篡改，不能防读取。**
-3. Signature：IdP私钥签名；业务方使用IdP公钥校验签名是否被篡改。
+3. Signature 签名：Header+Payload，用密钥 / 私钥算出签名，用来校验内容有没有被篡改。IdP私钥签名；业务方使用IdP公钥校验签名是否被篡改。
 
 区分两类JWT票据：
 
@@ -71,6 +70,26 @@ JWT格式三部分用`.`分割：`Header.Payload.Signature`
 2. silent‑iframe：隐藏iframe访问IdP，依赖IdP域名会话Cookie，实现无感知续期。
    > 风险：现代浏览器第三方Cookie限制，会导致silent‑iframe静默刷新失败，需要重新登录。
 
+### 🕐refresh_token 调用 IdP `/token` 接口什么时候触发（MSAL 内部触发时机）
+
+1. 业务代码要调用 API，检测`access_token`快要过期（MSAL 会判断`exp`过期时间，默认提前 5 分钟主动刷新）；
+2. 开发者手动调用 MSAL API `acquireTokenSilent()`；
+
+### 🕐silent‑iframe 隐藏 iframe 静默刷新什么时候触发（MSAL 内部触发时机）
+
+1. **refresh_token 已经失效，无法使用 refresh‑token 刷新**，降级使用 silent‑iframe；
+2. 开发者手动调用`acquireTokenSilent()`，MSAL 内部自动选择走 iframe 路径；
+
+### 执行完整流程
+
+1. JS 在当前页面创建一个宽高为 0、看不见的`<iframe>`；
+2. iframe 的 src 指向 IdP 的授权端点，带上参数 `prompt=none，client_id，redirect_uri`；
+3. 浏览器加载这个 iframe，访问`login.microsoftonline.com`；**浏览器自动带上 IdP 域名下的会话 Cookie**；
+4. IdP 读取 Cookie，确认用户会话有效；不会弹出登录界面；生成新 id_token + access_token；
+5. IdP 302 重定向回调回我们预先配置好的 redirect‑uri；
+6. iframe 内部完成回调，MSAL JS 监听到 iframe 里面 URL 带回的 token；提取出新 token 存入 localStorage；销毁 iframe。
+7. 业务拿到新 token 继续工作。
+
 ## 5. 浏览器存储对比 Cookie / localStorage / sessionStorage
 
 | 特性                   | Cookie                                                  | localStorage       | sessionStorage            |
@@ -82,8 +101,6 @@ JWT格式三部分用`.`分割：`Header.Payload.Signature`
 | 读写者                 | 后端Set‑Cookie；HttpOnly时JS不可读                      | 仅JS               | 仅JS                      |
 
 > 📝个人重要误区：
-> localStorage介质是持久化的，关闭浏览器数据还在。**但是存储在里面的token不等于永久有效。**
-> 字符串还存在存储里，但是JWT自带exp过期，refresh_token可以被服务端吊销；登出必须手动JS清除localStorage内token。
 > SPA无法使用HttpOnly Cookie存放access_token/id_token，因为SPA没有后端下发Set‑Cookie；所以MSAL‑JS把token存localStorage，带来XSS安全风险。
 
 ## 6. 重要概念区分

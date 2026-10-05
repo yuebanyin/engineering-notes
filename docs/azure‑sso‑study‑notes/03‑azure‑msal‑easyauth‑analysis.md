@@ -89,7 +89,7 @@
 | AJAX未登录处理        | 返回302，SPA有崩溃风险           | JS抛出异常，业务可控          |
 | SPA使用前提           | 必须搭配BFF后端代理              | 不需要额外后端，纯SPA也可使用 |
 
-## 📝结合个人简历项目思考（Sales Genie AI SPA项目）
+<!-- ## 📝结合个人简历项目思考（Sales Genie AI SPA项目）
 
 我的Sales Genie项目是React SPA：浏览器JS直接发起fetch、SSE流式请求；页面会长时间驻留在AI聊天界面，用户不会频繁刷新页面；没有BFF代理层。
 
@@ -98,4 +98,4 @@
 
 1. JS无法直接拿到access_token调用接口；
 2. 长时间页面驻留，会话过期后AJAX调用接口触发302重定向，造成业务异常。
-   因此项目选择MSAL‑JS，在浏览器侧处理完整OIDC SSO流程。
+   因此项目选择MSAL‑JS，在浏览器侧处理完整OIDC SSO流程。 -->
