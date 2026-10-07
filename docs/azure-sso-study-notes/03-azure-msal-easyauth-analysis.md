@@ -15,13 +15,12 @@
 
 - 角色：**前端SDK代码库（npm包），业务代码显式引入**，用于SPA。
 - 职责：封装OIDC协议；处理登录跳转回调；缓存token；实现silent‑iframe静默刷新；处理refresh‑token轮转；登出逻辑。
-- 存储：SPA模式下，token（id_token、access_token、refresh_token）存储在浏览器localStorage。
+- 存储：SPA模式下，token（id_token、access_token、refresh_token）存储在浏览器localStorage（常规）。
   > 风险点：localStorage容易遭受XSS攻击。IdP的登录会话Cookie是HttpOnly，JS不可读取，和SPA本地token相互独立。
 
 ### 1‑3 Easy‑Auth（正式名称：App Service Authentication / Authorization）
 
-> 💡我的当时误区：误以为Easy‑Auth是SDK代码包，需要引入项目。
-> ✅纠正：
+> 💡
 > Easy‑Auth是**Azure App Service平台层的可选中间件功能，不是SDK，不需要引入任何业务源代码。在Azure门户页面开关配置即可。**
 > 底层同样基于Entra ID OIDC协议。
 
@@ -54,12 +53,12 @@
 4. 浏览器隐私第三方Cookie策略清理会话。
 
 > ⚠️重点：SPA页面UI仍然正常，用户无感知；直到执行fetch/AJAX调用接口的时候，才暴露会话失效。
-> Easy‑Auth不会区分“页面GET请求”还是“AJAX异步请求”，只要未登录统一返回302重定向登录页。
+> Easy‑Auth不会区分“页面GET请求”还是“AJAX异步请求”，检测未登录返回302重定向登录页。
 > fetch API规范会**静默跟随302跳转，不会更新浏览器地址栏**；最终拿到登录页面HTML字符串，把HTML当成JSON解析，JS直接报错，页面不会跳转到登录页，业务功能直接崩溃。
 
 > 传统服务端渲染网站不受影响：因为是浏览器完整页面GET请求，收到302浏览器原生跳转登录页面。
 
-## 3. SPA场景下Easy‑Auth可行的唯一架构：BFF（Backend‑for‑Frontend）代理模式
+## 3. SPA场景下Easy‑Auth可行的架构：BFF（Backend‑for‑Frontend）代理模式
 
 架构约束：
 

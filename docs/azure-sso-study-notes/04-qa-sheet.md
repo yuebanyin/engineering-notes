@@ -1,7 +1,7 @@
-# 面试问答速查
+# 自测问答速查
 
-> 分为中文思路 + 简短英文口语版本；面向二面，围绕SSO、Azure、MSAL、Easy‑Auth。
-> 提示：面试不要死记硬背，抓住关键词，用自己的话讲出来即可。
+> 围绕SSO、Azure、MSAL、Easy‑Auth。
+> 提示：不要死记硬背，抓住关键词，用自己的话讲出来即可。
 
 ## Q1：What is difference between OAuth2.0 and OIDC?
 
@@ -108,7 +108,7 @@ localStorage可被JS读取，存在XSS跨站脚本攻击风险，如果页面存
 【英文口语】
 localStorage can be read by JavaScript. It brings XSS risk. If XSS vulnerability exists, attacker may steal tokens and impersonate user identity.
 
-## Q11：MSAL-JS localStorage 存 token，XSS 风险，行业有哪些防范手段（汇丰面试高频，重点）
+## Q11：MSAL-JS localStorage 存 token，XSS 风险，行业有哪些防范手段（面试高频，重点）
 
 风险根源：localStorage 可以被 JS 读取。一旦页面存在 XSS 漏洞，攻击者注入恶意 JS，就可以读取 localStorage 里面的 id_token /access_token，拿到身份凭证，调用后端 API。
 
@@ -136,7 +136,7 @@ localStorage can be read by JavaScript. It brings XSS risk. If XSS vulnerability
 
 ### ❗无法根除，只能降低风险
 
-> 重点面试话术：**这些措施只能降低 XSS 带来的危害，不能完全消除风险。如果业务是高敏感场景（金融），BFF 架构是更稳妥的方案，直接不让 JS 接触 token。**
+> 重点面试问答：**这些措施只能降低 XSS 带来的危害，不能完全消除风险。如果业务是高敏感场景（金融），BFF 架构是更稳妥的方案，直接不让 JS 接触 token。**
 
 ### 简短英文面试脚本
 
