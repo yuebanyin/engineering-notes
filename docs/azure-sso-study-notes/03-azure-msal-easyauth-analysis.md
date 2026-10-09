@@ -88,6 +88,10 @@
 | AJAX未登录处理        | 返回302，SPA有崩溃风险           | JS抛出异常，业务可控          |
 | SPA使用前提           | 必须搭配BFF后端代理              | 不需要额外后端，纯SPA也可使用 |
 
+## 6. 可运行的 React + MSAL 示例
+
+配套代码：[msal-react-spa-demo](./msal-react-spa-demo/README.md)。示例包含登录、账户选择、静默获取 API access token、交互式回退和登出。
+
 <!-- ## 📝结合个人简历项目思考（Sales Genie AI SPA项目）
 
 我的Sales Genie项目是React SPA：浏览器JS直接发起fetch、SSE流式请求；页面会长时间驻留在AI聊天界面，用户不会频繁刷新页面；没有BFF代理层。

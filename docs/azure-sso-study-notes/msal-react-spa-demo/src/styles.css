@@ -1,0 +1,164 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  color: #182230;
+  background: #f5f7fb;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: white;
+  background: #185abd;
+  cursor: pointer;
+  font-weight: 650;
+}
+
+button:hover:not(:disabled) {
+  background: #124a9e;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 2rem 1rem;
+}
+
+.card {
+  width: min(100%, 680px);
+  padding: clamp(1.5rem, 5vw, 3rem);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 18px 55px rgb(28 46 74 / 8%);
+}
+
+.eyebrow,
+.label {
+  color: #52657d;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.eyebrow {
+  margin: 0 0 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
+}
+
+.intro {
+  margin: 0.8rem 0 1.8rem;
+  color: #52657d;
+  line-height: 1.6;
+}
+
+.account {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.account > div:first-child {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.muted,
+.hint,
+.security-note {
+  color: #63758b;
+  font-size: 0.92rem;
+}
+
+.account-picker {
+  display: grid;
+  gap: 0.4rem;
+  color: #52657d;
+  font-size: 0.9rem;
+}
+
+select {
+  width: 100%;
+  padding: 0.65rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: white;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.secondary {
+  color: #24364b;
+  background: #e8edf5;
+}
+
+.secondary:hover:not(:disabled) {
+  background: #d8e0ec;
+}
+
+.hint {
+  margin: -0.5rem 0 0;
+}
+
+.error {
+  padding: 0.75rem;
+  border-radius: 8px;
+  color: #8b1e1e;
+  background: #fff0f0;
+  overflow-wrap: anywhere;
+}
+
+.result {
+  margin-top: 1rem;
+}
+
+.result h2 {
+  font-size: 1rem;
+}
+
+pre {
+  max-height: 20rem;
+  overflow: auto;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #f2f5f9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.security-note {
+  margin: 2rem 0 0;
+  line-height: 1.5;
+}
