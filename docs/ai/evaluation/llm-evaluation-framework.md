@@ -1,479 +1,187 @@
-# LLM 输出评估框架
+# LLM 输出评估：从任务定义到回归验证
 
-> 评估是 LLM 应用工程化的核心难题。"这个回复好不好"不再是主观判断，而是需要量化、可追溯、可迭代的过程。这篇笔记记录了我对 LLM 评估的理解和实践方法。
+> **适用读者：** 正在开发或维护 LLM 功能的产品、研发与测试人员
+> **目标：** 建立可复核的离线评估流程，判断输出是否满足具体任务要求
+> **范围：** 介绍评估集、评估方法、结果分析与回归验证；不绑定某一家模型服务或评估平台
+> **代码环境：** 示例仅使用 Python 标准库，可直接运行
+> **文档更新：** 2026-10-29
 
----
+## 1. 为什么需要专门的评估
 
-## 🎯 为什么评估很难
+LLM 输出具有随机性，也经常存在多个合理答案。评估因此不能只依赖字符串完全相同，也不能只看一个综合分数。团队需要先明确任务目标，再选择能解释该目标的检查方法。
 
-### LLM 输出的特点
+| 评估问题 | 示例 |
+|---|---|
+| 事实或行为是否正确 | 回答是否与可信上下文一致；代码是否通过测试 |
+| 任务是否完成 | 是否覆盖用户要求的关键步骤 |
+| 约束是否满足 | 是否遵循 JSON 格式、字数、权限或安全要求 |
+| 用户是否能完成目标 | 用户能否按生成的指南成功配置服务 |
 
-| 特点 | 挑战 |
-|------|------|
-| **非确定性** | 同样的输入可能有不同的输出 |
-| **多维度** | "好"有很多种含义：准确、完整、简洁、格式... |
-| **主观性** | 不同用户对"好"的定义不同 |
-| **上下文依赖** | 脱离场景很难判断好坏 |
+传统软件测试也可以是概率性的，LLM 评估也可以包含确定性断言。两者不是“确定性 vs. 概率性”的简单二分；应按风险组合使用。
 
-### 传统测试 vs LLM 评估
+## 2. 推荐工作流
 
-| 传统测试 | LLM 评估 |
-|----------|----------|
-| 精确匹配 | 语义相似 |
-| 通过/失败 | 程度/分数 |
-| 确定性 | 概率性 |
-| 一次验证 | 持续评估 |
+### 步骤 1：定义评估要支持的决策
 
----
+先写清楚结果将用于什么决策，例如比较两个提示词、检查版本回归，或判断某项功能是否达到上线门槛。没有明确决策目标时，不要先堆指标。
 
-## 📊 评估维度框架
+### 步骤 2：建立有版本的用例集
 
-### 核心维度
+用例应覆盖真实流量的代表场景、重要边界条件和高风险输入。为每条用例记录输入、必要上下文、验收要求和分类标签；如果任务允许多个正确答案，不要强行指定唯一参考文本。
 
-```
-                    ┌─────────────────────┐
-                    │     正确性          │
-                    │ (Correctness)       │
-                    └─────────────────────┘
-                             │
-        ┌────────────────────┼────────────────────┐
-        │                    │                    │
-        ▼                    ▼                    ▼
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│   完整性     │    │    格式      │    │    风格      │
-│(Completeness)│    │   (Format)   │    │   (Style)    │
-└──────────────┘    └──────────────┘    └──────────────┘
-        │                    │                    │
-        ▼                    ▼                    ▼
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│   安全性     │    │   实用性     │    │   效率       │
-│  (Safety)    │    │ (Usefulness) │    │(Efficiency)  │
-└──────────────┘    └──────────────┘    └──────────────┘
-```
-
-### 维度详解
-
-#### 1. 正确性（Correctness）
-
-**定义**：输出是否事实正确、逻辑正确
-
-**子维度**：
-- 事实准确：陈述的事实是否正确
-- 逻辑一致：推理过程是否有逻辑错误
-- 无幻觉：没有编造不存在的信息
-
-**评估方法**：
-```python
-def evaluate_correctness(output, ground_truth=None, context=None):
-    scores = {}
-    
-    # 如果有标准答案，检查关键信息
-    if ground_truth:
-        scores['factual_accuracy'] = check_key_facts(output, ground_truth)
-    
-    # 检查是否有明显的矛盾
-    scores['logical_consistency'] = check_contradictions(output)
-    
-    # 如果有参考上下文，检查是否有超出范围的声明
-    if context:
-        scores['grounded'] = check_groundedness(output, context)
-    
-    return scores
-```
-
-#### 2. 完整性（Completeness）
-
-**定义**：是否回答了用户的所有问题，覆盖了所有要点
-
-**评估方法**：
-```python
-def evaluate_completeness(output, requirements):
-    """
-    requirements: 期望输出应包含的要点列表
-    """
-    covered = []
-    missing = []
-    
-    for req in requirements:
-        if requirement_covered(output, req):
-            covered.append(req)
-        else:
-            missing.append(req)
-    
-    return {
-        'coverage_rate': len(covered) / len(requirements),
-        'covered': covered,
-        'missing': missing
+```json
+{
+  "dataset_version": "1.0",
+  "cases": [
+    {
+      "id": "setup-guide-001",
+      "input": "为服务编写本地启动说明",
+      "context": "服务监听端口为 8080",
+      "requirements": [
+        "说明启动命令",
+        "说明服务监听端口"
+      ],
+      "tags": ["documentation", "setup"]
     }
-```
-
-#### 3. 格式（Format）
-
-**定义**：是否符合要求的输出格式
-
-**评估方法**：
-```python
-def evaluate_format(output, expected_format):
-    """
-    检查是否符合预期格式
-    """
-    if expected_format == 'json':
-        try:
-            json.loads(output)
-            return {'valid': True, 'format_score': 1.0}
-        except:
-            return {'valid': False, 'format_score': 0, 'error': 'Invalid JSON'}
-    
-    if expected_format == 'markdown':
-        # 检查 markdown 结构
-        has_headers = bool(re.search(r'^#+\s', output, re.MULTILINE))
-        has_code_blocks = '```' in output
-        return {
-            'has_headers': has_headers,
-            'has_code_blocks': has_code_blocks,
-            'format_score': (has_headers + has_code_blocks) / 2
-        }
-```
-
-#### 4. 安全性（Safety）
-
-**定义**：不包含有害、偏见、敏感内容
-
-**评估维度**：
-- 有害内容
-- 偏见歧视
-- 隐私泄露
-- 不当建议
-
-#### 5. 实用性（Usefulness）
-
-**定义**：对用户完成任务是否有帮助
-
-**这是最重要也最难量化的维度**
-
----
-
-## 🔧 评估方法
-
-### 方法 1：规则匹配
-
-最简单的方法，适合有明确规则的场景。
-
-```python
-def rule_based_evaluation(output, rules):
-    """
-    rules: 规则列表，每个规则是一个检查函数
-    """
-    results = []
-    
-    for rule in rules:
-        result = rule.check(output)
-        results.append({
-            'rule': rule.name,
-            'passed': result.passed,
-            'reason': result.reason
-        })
-    
-    return {
-        'total': len(rules),
-        'passed': sum(1 for r in results if r['passed']),
-        'details': results
-    }
-
-# 规则示例
-rules = [
-    Rule("长度检查", lambda x: 50 < len(x) < 1000),
-    Rule("格式检查", lambda x: x.startswith('#')),
-    Rule("关键词包含", lambda x: 'function' in x.lower()),
-    Rule("无禁用词", lambda x: '政治' not in x),
-]
-```
-
-### 方法 2：相似度匹配
-
-当有参考答案时，比较语义相似度。
-
-```python
-from sentence_transformers import SentenceTransformer
-
-def semantic_similarity(output, reference):
-    """
-    计算输出与参考答案的语义相似度
-    """
-    model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
-    
-    embeddings = model.encode([output, reference])
-    similarity = cosine_similarity([embeddings[0]], [embeddings[1]])[0][0]
-    
-    return {
-        'similarity': float(similarity),
-        'assessment': 'pass' if similarity > 0.8 else 'fail'
-    }
-```
-
-### 方法 3：LLM-as-Judge
-
-用另一个 LLM 来评估输出质量。
-
-```python
-def llm_judge(output, criteria, reference=None):
-    """
-    使用 LLM 作为评判者
-    """
-    prompt = f"""
-    请评估以下输出的质量。
-    
-    ## 评估标准
-    {criteria}
-    
-    ## 待评估输出
-    {output}
-    
-    {"## 参考答案" + reference if reference else ""}
-    
-    ## 请输出评估结果
-    格式：
-    {{
-      "overall_score": 1-5,
-      "dimensions": {{
-        "正确性": {{"score": 1-5, "reason": "..."}},
-        "完整性": {{"score": 1-5, "reason": "..."}},
-        "格式": {{"score": 1-5, "reason": "..."}}
-      }},
-      "summary": "一句话总结"
-    }}
-    """
-    
-    response = llm.generate(prompt)
-    return json.loads(response)
-```
-
-**LLM-as-Judge 的注意事项**：
-- 评判 LLM 可能有自己的偏见
-- 需要校准（与人工评估对比）
-- 成本考虑（每次评估都是一次 API 调用）
-
-### 方法 4：人工评估
-
-最可靠但最贵的方法。
-
-```python
-def human_evaluation_schema():
-    """
-    人工评估的标准化表单
-    """
-    return {
-        "evaluator_id": "string",
-        "timestamp": "datetime",
-        "input": "原始输入",
-        "output": "模型输出",
-        "ratings": {
-            "correctness": {
-                "score": "1-5",
-                "issues": ["问题列表"]
-            },
-            "completeness": {
-                "score": "1-5",
-                "missing_points": ["缺失的要点"]
-            },
-            "format": {
-                "score": "1-5",
-                "issues": ["格式问题"]
-            },
-            "overall": {
-                "score": "1-5",
-                "would_use": "boolean",
-                "comments": "自由评论"
-            }
-        }
-    }
-```
-
----
-
-## 📋 评估体系搭建
-
-### 评估数据集
-
-```python
-# 评估数据集结构
-evaluation_dataset = {
-    "name": "code_generation_v1",
-    "version": "1.0",
-    "description": "代码生成任务评估集",
-    "samples": [
-        {
-            "id": "001",
-            "input": "用户输入/prompt",
-            "context": "额外上下文（可选）",
-            "expected_output": "期望输出（可选）",
-            "requirements": ["要点1", "要点2"],
-            "metadata": {
-                "difficulty": "easy/medium/hard",
-                "category": "分类",
-                "tags": ["标签"]
-            }
-        }
-    ]
+  ]
 }
 ```
 
-### 评估流水线
+开发时反复使用的用例容易造成过拟合。高风险或用于上线判断的场景应保留独立检查集，并记录数据来源、版本和变更原因。
+
+### 步骤 3：把“好”写成可判定的标准
+
+每个维度应有定义、评分尺度和例子。以下是生成操作指南时可用的起点，实际权重与门槛应由产品风险决定。
+
+| 维度 | 需要回答的问题 | 常见检查方式 |
+|---|---|---|
+| 正确性 | 命令、参数、事实和结论是否正确？ | 规则、执行测试、可信参考资料、人工复核 |
+| 完整性 | 是否包含完成任务所需的前置条件与步骤？ | 必要要点清单、结构校验、人工抽检 |
+| 可执行性 | 目标读者能否按步骤得到预期结果？ | 在隔离环境中复现步骤并记录结果 |
+| 格式 | 输出是否符合约定结构？ | JSON / Markdown / schema 校验 |
+| 安全与隐私 | 是否暴露秘密或建议越权操作？ | 明确约束、规则检查、针对性评审 |
+| 可读性 | 读者是否能快速找到并理解信息？ | 目标读者评审、任务完成观察 |
+
+### 步骤 4：按标准选评估方法
+
+| 方法 | 适用场景 | 局限与注意点 |
+|---|---|---|
+| 规则与程序断言 | 格式、必需字段、固定约束、代码测试 | 规则只能检查被明确编码的内容 |
+| 参考答案或指标 | 有可信标签、答案或任务专用指标 | 表述不同不代表语义错误；指标需匹配任务 |
+| LLM-as-Judge | 风格、解释质量等难以完全规则化的维度 | 可能存在偏差；需要校准并与人工结果对照 |
+| 人工评估 | 高风险决策、复杂正确性、用户体验 | 成本较高；应定义抽样与标注规范 |
+
+通常应组合多种方法：用确定性检查把可机械验证的内容前置，再把需要判断语义或用户体验的部分交给人工或经过校准的 judge。
+
+### 步骤 5：运行并保存可复现信息
+
+每次运行至少记录：
+
+- 用例集版本、评估代码版本与运行时间；
+- 模型名称/版本、提示词版本和采样参数；
+- 评估器或 judge 的名称/版本、Rubric 版本；
+- 每条用例的原始输入、输出、检查结果和失败原因；
+- 若有随机抽样或重复运行，记录抽样方式、运行次数及随机种子（若接口支持）。
+
+不要只保留聚合后的平均分；原始失败样例是定位问题和复核结论的必要证据。
+
+### 步骤 6：分析失败模式并设置回归门槛
+
+按任务类别、难度、风险和评估维度查看结果，先检查失败样例，再解释汇总指标。上线门槛应结合业务影响和基线定义，不存在适用于所有任务的统一分数。
+
+## 3. 可运行示例：检查明确的必需短语
+
+下面的代码只演示一个确定性断言：输出是否包含指定短语。它**不能**证明输出事实正确、语义完整或对用户有帮助。
 
 ```python
-class EvaluationPipeline:
-    def __init__(self, evaluators):
-        self.evaluators = evaluators
-    
-    def evaluate(self, dataset, model):
-        results = []
-        
-        for sample in dataset.samples:
-            # 生成输出
-            output = model.generate(sample.input)
-            
-            # 多维度评估
-            evaluation = {}
-            for evaluator in self.evaluators:
-                evaluation[evaluator.name] = evaluator.evaluate(
-                    output=output,
-                    sample=sample
-                )
-            
-            results.append({
-                'sample_id': sample.id,
-                'input': sample.input,
-                'output': output,
-                'evaluation': evaluation
-            })
-        
-        return self._aggregate_results(results)
-    
-    def _aggregate_results(self, results):
-        # 汇总统计
-        return {
-            'total_samples': len(results),
-            'average_scores': self._calculate_averages(results),
-            'pass_rate': self._calculate_pass_rate(results),
-            'details': results
-        }
+def score_required_phrases(output, required_phrases):
+    if not isinstance(output, str) or not output.strip():
+        raise ValueError("output must be a non-empty string")
+    required_phrases = list(required_phrases)
+    if not required_phrases:
+        raise ValueError("required_phrases must contain at least one item")
+    if any(not isinstance(phrase, str) or not phrase.strip() for phrase in required_phrases):
+        raise ValueError("each required phrase must be a non-empty string")
+
+    normalized_requirements = [phrase.casefold() for phrase in required_phrases]
+    if len(set(normalized_requirements)) != len(normalized_requirements):
+        raise ValueError("required_phrases must be unique, ignoring case")
+
+    normalized_output = output.casefold()
+    missing = [
+        phrase
+        for phrase in required_phrases
+        if phrase.casefold() not in normalized_output
+    ]
+    return {
+        "score": (len(required_phrases) - len(missing)) / len(required_phrases),
+        "passed": not missing,
+        "missing": missing,
+    }
+
+
+result = score_required_phrases(
+    "Install complete. The service listens on port 8080.",
+    ["install complete", "8080"],
+)
+assert result == {"score": 1.0, "passed": True, "missing": []}
+
+result = score_required_phrases(
+    "Install complete.",
+    ["install complete", "8080"],
+)
+assert result == {"score": 0.5, "passed": False, "missing": ["8080"]}
 ```
 
-### 持续评估
+如果验收要求只是“说明端口”，检查字符串 `8080` 可以作为基础门禁；它仍不能证明该端口来自可信规格，或操作步骤确实可运行。此类要求需要与来源核对或环境验证配合。
 
-```python
-# 评估结果追踪
-class EvaluationTracker:
-    def __init__(self, storage):
-        self.storage = storage
-    
-    def record(self, evaluation_run):
-        """记录一次评估"""
-        self.storage.save({
-            'run_id': generate_id(),
-            'timestamp': datetime.now(),
-            'model_version': evaluation_run.model_version,
-            'prompt_version': evaluation_run.prompt_version,
-            'dataset_version': evaluation_run.dataset_version,
-            'results': evaluation_run.results
-        })
-    
-    def compare(self, run_id_a, run_id_b):
-        """对比两次评估"""
-        run_a = self.storage.get(run_id_a)
-        run_b = self.storage.get(run_id_b)
-        
-        return {
-            'score_diff': run_b.avg_score - run_a.avg_score,
-            'pass_rate_diff': run_b.pass_rate - run_a.pass_rate,
-            'regression': self._find_regressions(run_a, run_b),
-            'improvements': self._find_improvements(run_a, run_b)
-        }
-```
+## 4. 使用 LLM-as-Judge 时的校准
 
----
+Judge 的评分也是模型输出，不能默认视为客观真值。上线使用前应：
 
-## 💡 实践经验
+1. 为每个分数等级写出可区分的评分锚点和反例；
+2. 固定输入、Rubric、judge 模型及调用参数；
+3. 抽取覆盖不同任务类别的样本，与人工标注结果比较；
+4. 检查系统性偏差；成对比较时轮换候选答案顺序；
+5. 对高风险或有争议的样本保留人工复核；
+6. judge 或 Rubric 变更后重新运行基线，避免新旧结果不可比。
 
-### 设计评估集的原则
+Judge 应根据明确标准评估输出，不应只因答案较长、语气自信或格式精美而给高分。提示词、judge 输出和判定依据都应纳入版本管理。
 
-1. **覆盖边界情况**：不只是正常输入，还要包含极端情况
-2. **代表真实分布**：评估集应该反映实际使用场景
-3. **可维护**：易于更新和扩展
-4. **有版本**：评估集也需要版本管理
+## 5. 报告指标与常见陷阱
 
-### 评估指标选择
+| 指标 | 报告时需要说明 |
+|---|---|
+| 任务成功率 | 成功的定义、分母、失败与超时是否计入 |
+| 必需约束通过率 | 检查规则、适用用例及未通过项 |
+| 各维度评分 | 量表、Rubric 版本、样本量及人工校准情况 |
+| 延迟与成本 | 统计口径、模型版本、采样参数与运行环境 |
 
-| 场景 | 核心指标 |
-|------|----------|
-| 信息检索 | 准确率、召回率、F1 |
-| 代码生成 | 语法正确率、测试通过率 |
-| 文本摘要 | ROUGE、事实一致性 |
-| 对话 | 连贯性、有用性、安全性 |
-| 分类 | 准确率、混淆矩阵 |
+避免以下做法：
 
-### 评估的成本效益
+- 只报告总分，掩盖特定用户群或任务类别的回归；
+- 用评估集反复调参后仍将其当作独立测试集；
+- 把字符串相似度直接解释为事实正确；
+- 让单一 judge 决定高风险发布，而没有人工校准；
+- 数据、提示词或模型改变后仍直接比较未标记版本的结果。
 
-```
-评估方法成本对比：
-规则检查    ━━━━━▸ 低成本，有限覆盖
-相似度匹配  ━━━━━━━━━▸ 中等成本，需要参考答案
-LLM-as-Judge ━━━━━━━━━━━━━▸ 较高成本，灵活
-人工评估    ━━━━━━━━━━━━━━━━━━━━▸ 最高成本，最可靠
-```
+## 6. 发布前检查清单
 
-**建议**：
-- 开发阶段：规则 + LLM-as-Judge
-- 发布前：加入人工抽检
-- 线上监控：自动化规则 + 采样人工
+- [ ] 用例集有版本、来源和目标场景说明。
+- [ ] 每个指标有定义、分母和失败处理方式。
+- [ ] 可机械检查的格式与硬约束已自动验证。
+- [ ] 语义判断使用有锚点的 Rubric，并抽样人工校准。
+- [ ] 报告保留原始输出、单例失败原因和运行元数据。
+- [ ] 已检查关键场景的回归，而非仅比较平均分。
+- [ ] 第三方评估平台的 API 与生命周期已按当前官方文档确认。
 
-### 避免评估陷阱
+## 相关笔记
 
-| 陷阱 | 说明 | 避免方法 |
-|------|------|----------|
-| 过拟合评估集 | 针对评估集优化，但泛化差 | 保留测试集，定期更换 |
-| 指标游戏 | 优化指标但实际体验没提升 | 结合人工评估 |
-| 评估偏见 | 评估方法有系统性偏见 | 多维度、多方法交叉验证 |
-| 成本失控 | 评估本身消耗太多资源 | 分层评估，采样策略 |
-
----
-
-## 🔄 评估驱动迭代
-
-```
-定义评估标准
-      │
-      ▼
-构建评估数据集
-      │
-      ▼
-运行基线评估 ◄───────────────┐
-      │                      │
-      ▼                      │
-分析问题模式                 │
-      │                      │
-      ▼                      │
-优化（prompt/模型/工具）     │
-      │                      │
-      ▼                      │
-重新评估 ────┬── 改进 ──────►│
-             │               │
-             └── 回归 ───────┘
-```
-
----
-
-## 📚 相关笔记
-
-- [提示词工程基础](../prompting/prompt-engineering-fundamentals.md)
+- [LLM 工具调用：设计、验证与错误处理](../agents/tool-use-and-function-calling.md)
+- [Agent 架构模式与设计决策](../agents/agent-architecture-patterns.md)
 - [LLM API 使用最佳实践](../llm/llm-api-best-practices.md)
-- [常见问题与解决方案](../troubleshooting/common-llm-issues.md)
-
----
 
 ## 参考资料
 
-- [OpenAI Evals](https://github.com/openai/evals)
-- [LangChain Evaluation](https://python.langchain.com/docs/guides/evaluation/)
-- [RAGAS - RAG Assessment](https://github.com/explodinggradients/ragas)
-- [LLM-as-Judge Paper](https://arxiv.org/abs/2306.05685)
+- [OpenAI：Working with evals](https://developers.openai.com/api/docs/guides/evals)（访问日期：2026-10-29；官方页面说明 Evals 平台正在弃用，本文仅引用其评估概念，不将该平台作为工具选型建议）
+- [Zheng et al.：Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena](https://arxiv.org/abs/2306.05685)

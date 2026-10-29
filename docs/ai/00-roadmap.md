@@ -27,7 +27,7 @@
 | 文件 | 主题 | 状态 |
 |------|------|------|
 | [agent-architecture-patterns.md](agents/agent-architecture-patterns.md) | Agent 架构模式与设计决策 | ✅ |
-| [tool-use-and-function-calling.md](agents/tool-use-and-function-calling.md) | 工具使用与函数调用实践 | ✅ |
+| [tool-use-and-function-calling.md](agents/tool-use-and-function-calling.md) | LLM 工具调用：设计、验证与错误处理 | ✅ |
 
 ### evaluation/ 评估方法
 | 文件 | 主题 | 状态 |

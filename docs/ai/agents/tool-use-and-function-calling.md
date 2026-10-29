@@ -1,615 +1,170 @@
-# 工具使用与函数调用实践
+# LLM 工具调用：设计、验证与错误处理
 
-> 工具使用（Tool Use）是让 LLM 从"只能说"变成"能做事"的关键能力。这篇笔记记录了工具定义、调用模式、错误处理的实践经验。
+> **适用读者：** 将 LLM 接入 API、服务或本地工具的应用研发人员
+> **目标：** 设计可理解、可验证、受权限控制的工具调用流程
+> **范围：** 说明跨 Provider 的共通概念与工程检查点；示例不绑定某家 SDK
+> **术语：** 本文用“工具调用”统称 function calling / tool use
+> **文档更新：** 2026-10-29
 
----
+## 1. 工具调用是什么
 
-## 🎯 核心概念
+工具调用让模型提出结构化的操作请求，再由应用侧决定是否执行。模型通常不会直接执行开发者定义的函数；应用服务负责解析请求、校验参数、检查权限、执行工具，并将结果按 Provider 要求送回模型。
 
-### 什么是 Tool Use
-
-**Tool Use = LLM 决策 + 程序执行**
-
+```text
+用户请求
+   ↓
+应用向模型提供工具定义与上下文
+   ↓
+模型返回普通文本，或返回一个/多个工具调用请求
+   ↓
+应用校验工具名、参数、权限与执行策略
+   ↓
+应用执行允许的操作，并整理结果
+   ↓
+应用将结果交还模型，生成最终回复或下一轮调用
 ```
-用户：帮我查一下深圳明天的天气
 
-LLM 思考：用户想知道天气，我需要调用 get_weather 工具
+OpenAI、Anthropic 和其他 Provider 的请求字段、响应块、调用 ID、并行策略和错误格式并不完全相同。设计通用架构时，应分离“应用自己的工具契约”与“Provider SDK 的传输格式”。
 
-LLM 输出（结构化）：
+## 2. 设计工具定义
+
+一个清晰的工具定义应让模型知道能做什么、什么时候使用、需要什么输入、有哪些限制，以及结果会是什么。以下是**Provider-neutral 的工具契约示例**，其中 `input_schema` 遵循 JSON Schema；它不是可直接复制到某家 SDK 的完整工具声明：
+
+```json
 {
-  "tool": "get_weather",
-  "arguments": { "city": "深圳", "date": "明天" }
-}
-
-程序执行工具：
-weather_api.get("深圳", "2024-03-16") → { temp: 22, condition: "晴" }
-
-LLM 生成最终回复：
-深圳明天天气晴朗，气温约 22℃，适合户外活动。
-```
-
-### 各平台的实现
-
-| 平台 | 名称 | 特点 |
-|------|------|------|
-| OpenAI | Function Calling | 最早推出，生态完善 |
-| Anthropic | Tool Use | 支持更复杂的工具嵌套 |
-| Google | Function Calling | 类似 OpenAI |
-| 开源模型 | 各有实现 | 能力参差不齐 |
-
----
-
-## 📋 工具定义最佳实践
-
-### 基础结构
-
-```javascript
-const tool = {
-  // 工具名称：简洁、动词开头、snake_case
-  name: "search_codebase",
-  
-  // 描述：完整说明用途和使用场景
-  description: `
-    在代码库中搜索代码片段。
-    使用场景：
-    - 查找函数或类的定义
-    - 搜索特定代码模式
-    - 定位文件位置
-    返回匹配的文件路径和代码片段。
-  `,
-  
-  // 参数定义：JSON Schema 格式
-  parameters: {
-    type: "object",
-    required: ["query"],
-    properties: {
-      query: {
-        type: "string",
-        description: "搜索关键词或正则表达式"
-      },
-      file_pattern: {
-        type: "string",
-        description: "文件路径模式，如 '*.ts'。不指定则搜索所有文件。"
-      },
-      max_results: {
-        type: "integer",
-        description: "最大返回结果数",
-        default: 10
-      },
-      context_lines: {
-        type: "integer",
-        description: "每个匹配前后显示的上下文行数",
-        default: 3
+  "name": "lookup_order_status",
+  "description": "查询当前用户有权查看的订单状态。只读操作；不创建、修改或取消订单。",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "order_id": {
+        "type": "string",
+        "description": "订单 ID；必须是用户提供或当前会话中已确认的订单 ID。"
       }
-    }
-  }
-};
-```
-
-### 命名规范
-
-```javascript
-// ✅ 好的命名
-"search_files"       // 动词_名词
-"get_user_info"      // 动词_对象_属性
-"create_document"    // 动词_对象
-"run_tests"          // 动词_名词
-
-// ❌ 不好的命名
-"file_searcher"      // 名词（不是动作）
-"getUser"            // 驼峰（不统一）
-"search"             // 太模糊
-"do_stuff"           // 无意义
-```
-
-### 描述编写技巧
-
-```javascript
-// ❌ 描述太简单
-description: "搜索代码"
-
-// ❌ 描述太冗长
-description: "这是一个用于在代码库中进行全文搜索的工具函数，
-它可以接受用户输入的查询字符串，然后遍历整个代码库...
-（后面还有 500 字）"
-
-// ✅ 恰到好处
-description: `
-在代码库中搜索代码片段。
-
-适用于：
-- 查找函数定义
-- 搜索特定模式
-- 定位文件
-
-返回：匹配的文件路径和代码上下文。
-`
-```
-
-### 参数设计原则
-
-```javascript
-// ✅ 好的参数设计
-{
-  // 必填参数放前面
-  required: ["action", "target"],
-  
-  properties: {
-    // 枚举类型明确选项
-    action: {
-      type: "string",
-      enum: ["create", "update", "delete"],
-      description: "要执行的操作类型"
     },
-    
-    // 有默认值的可选参数
-    format: {
-      type: "string",
-      enum: ["json", "yaml", "xml"],
-      default: "json",
-      description: "输出格式，默认 json"
-    },
-    
-    // 复杂参数用对象
-    options: {
-      type: "object",
-      properties: {
-        verbose: { type: "boolean", default: false },
-        timeout: { type: "integer", default: 30 }
-      }
-    }
+    "required": ["order_id"],
+    "additionalProperties": false
   }
 }
 ```
 
----
+Provider 的工具声明字段名可能不同，例如有的 API 使用 `parameters`，有的使用 `input_schema`。映射前应查阅目标 Provider 当前版本的官方参考。
 
-## 🔧 调用模式
+### 编写名称与描述
 
-### 模式 1：单次调用
+- 名称使用明确动作和对象，例如 `lookup_order_status`，避免 `search`、`do_stuff` 等模糊名称。
+- 描述写清使用场景、边界、输入含义、结果与副作用。
+- 参数描述包含格式、单位、取值范围和必要约束；将模型难以判断的隐含默认值显式化。
+- 仅暴露当前任务需要的工具；工具变多时，用场景分组或分阶段加载，并用评测验证选择质量。
+- 读操作与写操作分开定义；避免让一个宽泛工具同时拥有不必要的修改权限。
 
-最简单的模式：一个请求，一次工具调用。
+## 3. 应用侧执行流程
 
-```javascript
-// 用户请求
-const userMessage = "深圳今天天气怎么样？";
+每次模型返回工具调用后，应用至少需要完成以下检查。不能把“模型成功生成了符合格式的参数”当成授权或安全校验。
 
-// LLM 响应包含工具调用
-const response = await llm.chat({
-  messages: [{ role: "user", content: userMessage }],
-  tools: [weatherTool]
-});
+| 阶段 | 检查点 | 失败处理 |
+|---|---|---|
+| 识别工具 | 名称是否存在于本轮允许的工具注册表 | 拒绝未知工具，并记录可诊断错误 |
+| 解析参数 | JSON 是否有效，结构是否符合当前工具 schema | 不执行；返回明确的参数错误 |
+| 校验权限 | 调用者是否有权访问该资源或执行该动作 | 拒绝未授权请求，不向模型泄漏敏感细节 |
+| 确认副作用 | 是否涉及外部写入、不可逆操作或高影响动作 | 按产品策略要求用户确认 |
+| 执行控制 | 超时、并发上限、速率限制和资源预算 | 终止或返回可识别的失败状态 |
+| 结果整理 | 截断过长输出、去除秘密与内部异常信息 | 只返回完成任务所需的最小结果 |
+| 继续对话 | 关联正确的 tool-call ID，并遵循 Provider 消息格式 | 保留调用与结果的关联，避免错配 |
 
-if (response.tool_calls) {
-  const call = response.tool_calls[0];
-  
-  // 执行工具
-  const result = await executeWeather(call.arguments);
-  
-  // 将结果返回给 LLM 生成最终回复
-  const finalResponse = await llm.chat({
-    messages: [
-      { role: "user", content: userMessage },
-      { role: "assistant", tool_calls: response.tool_calls },
-      { role: "tool", tool_call_id: call.id, content: JSON.stringify(result) }
-    ]
-  });
-  
-  return finalResponse.content;
-}
+工具结果以及从网页、文件、命令输出中取得的内容都应被视为不可信输入。它们不能改变应用的权限规则，也不能绕过服务端授权。
+
+## 4. 并行、连续调用与终止条件
+
+### 连续调用
+
+模型可能根据工具结果提出后续调用。应用应设置最大轮数、单轮工具数量、执行超时和总预算；达到任一上限时，以明确的失败状态结束，而不是无限循环。
+
+### 并行调用
+
+只有在调用彼此独立、不会争用状态且允许并发时，才并行执行。对写操作或有顺序依赖的调用，应使用串行流程，或明确设计幂等键与冲突处理。并行数应受控，不能把任意模型返回数量直接交给无限制的 `Promise.all`。
+
+### 停止条件
+
+- 模型返回最终文本，且没有待处理工具调用；
+- 调用达到轮数、时间、成本或并发上限；
+- 工具返回不可恢复的权限、参数或资源错误；
+- 用户取消任务或撤销授权。
+
+不同 Provider 对工具调用和最终消息的表示不同。下面的流程是**伪代码**，展示责任边界，不是可运行 SDK 示例：
+
+```text
+for each model turn, up to MAX_TOOL_ROUNDS:
+    response = call_model(messages, available_tools)
+    if response has no tool calls:
+        return response text
+
+    for each call in response tool calls:
+        tool = registry.lookup(call.name)
+        validate call.arguments against tool schema
+        authorize current user for this tool and resource
+        if policy requires confirmation and confirmation is absent:
+            return confirmation_required
+        result = execute with timeout and resource limits
+        append result using this provider's tool-call ID format
+
+return explicit max_rounds_exceeded error
 ```
 
-### 模式 2：多次调用（并行）
+## 5. 错误、重试与可观测性
 
-LLM 一次请求多个工具，可以并行执行。
+### 错误分类
 
-```javascript
-// 用户请求
-const userMessage = "比较深圳和北京的天气";
+| 错误类型 | 是否自动重试 | 建议处理 |
+|---|---|---|
+| 参数无效、未知工具 | 否 | 不执行；返回可修正的错误代码 |
+| 未授权、需要用户确认 | 否 | 停止执行并遵循访问控制策略 |
+| 资源不存在 | 通常否 | 返回不泄露他人数据的结果 |
+| 超时、暂时不可用 | 视工具特性而定 | 有次数与总时限上限地重试 |
+| 速率限制 | 视服务端策略而定 | 遵循重试提示；限制总等待时间 |
 
-// LLM 可能返回多个工具调用
-const response = await llm.chat({
-  messages: [{ role: "user", content: userMessage }],
-  tools: [weatherTool]
-});
+重试前需确认操作是幂等的，或已使用服务端幂等机制；否则可能重复产生副作用。错误返回模型时应保持状态明确，例如 `status=error`、稳定的错误代码和有限的下一步提示；不要吞掉异常或将失败伪装成成功数据。
 
-if (response.tool_calls && response.tool_calls.length > 1) {
-  // 并行执行所有工具调用
-  const results = await Promise.all(
-    response.tool_calls.map(async (call) => ({
-      id: call.id,
-      result: await executeWeather(call.arguments)
-    }))
-  );
-  
-  // 将所有结果返回给 LLM
-  const toolMessages = results.map(r => ({
-    role: "tool",
-    tool_call_id: r.id,
-    content: JSON.stringify(r.result)
-  }));
-  
-  const finalResponse = await llm.chat({
-    messages: [
-      { role: "user", content: userMessage },
-      { role: "assistant", tool_calls: response.tool_calls },
-      ...toolMessages
-    ]
-  });
-}
-```
+### 记录什么
 
-### 模式 3：链式调用
+记录关联 ID、工具名称、执行状态、耗时、重试次数和经过脱敏的错误代码。不要在日志或发回模型的结果中暴露访问令牌、个人数据、堆栈、内部主机名或不必要的原始文件内容。
 
-一个工具的结果作为下一个工具的输入。
+## 6. 工具调用质量如何评估
 
-```javascript
-// 用户请求
-const userMessage = "帮我找到最近修改的文件，然后检查有没有语法错误";
+把工具选择和工具执行分开检查，避免模型选择错误与后端执行失败混为一谈。
 
-// 循环直到 LLM 不再调用工具
-let messages = [{ role: "user", content: userMessage }];
+| 指标 | 需要定义的口径 |
+|---|---|
+| 工具选择正确率 | 对给定任务，是否选择了预期工具或正确地不调用工具 |
+| 参数有效率 | 参数是否符合 schema、范围和业务约束 |
+| 授权拦截正确率 | 无权限请求是否被拒绝，合法请求是否能继续 |
+| 工具执行成功率 | 依赖服务成功、失败、超时分别如何计数 |
+| 任务完成率 | 最终目标是否完成，是否由独立判定方式验证 |
+| 副作用与延迟 | 重复写入、取消、重试及端到端耗时的统计口径 |
 
-while (true) {
-  const response = await llm.chat({
-    messages,
-    tools: [findFilesTool, checkSyntaxTool]
-  });
-  
-  if (!response.tool_calls) {
-    // 没有更多工具调用，返回最终回复
-    return response.content;
-  }
-  
-  // 添加助手消息
-  messages.push({ role: "assistant", tool_calls: response.tool_calls });
-  
-  // 执行工具并添加结果
-  for (const call of response.tool_calls) {
-    const result = await executeTool(call.name, call.arguments);
-    messages.push({
-      role: "tool",
-      tool_call_id: call.id,
-      content: JSON.stringify(result)
-    });
-  }
-}
-```
+评测集应包含正常调用、缺少必要信息、边界参数、无权限请求、工具失败和无需调用工具的场景。高影响动作应单独验证确认流程。
 
-### 模式 4：工具选择约束
+## 7. 发布前检查清单
 
-有时需要强制或禁止使用特定工具。
+- [ ] 工具名称和描述能区分相似能力，并说明副作用。
+- [ ] Provider 请求与响应适配层保留调用 ID 和消息顺序。
+- [ ] 参数经过 schema 校验、业务校验和服务端授权。
+- [ ] 不可信工具输出不会被当成权限或系统指令。
+- [ ] 连续调用有轮数、超时、并发和成本边界。
+- [ ] 重试只用于适合的失败，并考虑幂等性。
+- [ ] 日志已脱敏，用户取消和权限拒绝有明确路径。
+- [ ] 测试包含异常输入、权限边界、工具失败和无工具场景。
+- [ ] 所用 Provider 文档与 SDK 版本已核对。
 
-```javascript
-// 强制使用特定工具
-const response = await llm.chat({
-  messages,
-  tools,
-  tool_choice: { type: "function", function: { name: "search_code" } }
-});
+## 相关笔记
 
-// 禁止使用工具（只回复文本）
-const response = await llm.chat({
-  messages,
-  tools,
-  tool_choice: "none"
-});
-
-// 让 LLM 自己决定（默认）
-const response = await llm.chat({
-  messages,
-  tools,
-  tool_choice: "auto"
-});
-```
-
----
-
-## ⚠️ 错误处理
-
-### 工具执行错误
-
-```javascript
-async function executeToolWithErrorHandling(name, args) {
-  try {
-    const result = await tools[name].execute(args);
-    return {
-      success: true,
-      data: result
-    };
-  } catch (error) {
-    // 返回结构化错误信息，让 LLM 理解并调整
-    return {
-      success: false,
-      error: {
-        type: error.name,
-        message: error.message,
-        suggestion: getSuggestion(error)
-      }
-    };
-  }
-}
-
-function getSuggestion(error) {
-  if (error.name === 'FileNotFoundError') {
-    return '文件不存在，请检查路径是否正确，或使用 search_files 工具查找';
-  }
-  if (error.name === 'PermissionError') {
-    return '没有权限访问，请尝试其他方式';
-  }
-  if (error.name === 'TimeoutError') {
-    return '操作超时，请尝试缩小范围或稍后重试';
-  }
-  return '请检查参数并重试';
-}
-```
-
-### 参数验证
-
-```javascript
-function validateToolCall(call, toolDefinition) {
-  const { parameters } = toolDefinition;
-  const args = call.arguments;
-  
-  // 检查必填参数
-  for (const required of parameters.required || []) {
-    if (!(required in args)) {
-      return {
-        valid: false,
-        error: `缺少必填参数：${required}`
-      };
-    }
-  }
-  
-  // 检查参数类型
-  for (const [key, value] of Object.entries(args)) {
-    const schema = parameters.properties[key];
-    if (!schema) {
-      return {
-        valid: false,
-        error: `未知参数：${key}`
-      };
-    }
-    
-    if (!validateType(value, schema.type)) {
-      return {
-        valid: false,
-        error: `参数 ${key} 类型错误，期望 ${schema.type}`
-      };
-    }
-  }
-  
-  return { valid: true };
-}
-```
-
-### 重试策略
-
-```javascript
-async function executeWithRetry(call, maxRetries = 3) {
-  let lastError = null;
-  
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      return await executeTool(call.name, call.arguments);
-    } catch (error) {
-      lastError = error;
-      
-      // 某些错误不应该重试
-      if (!isRetryable(error)) {
-        throw error;
-      }
-      
-      // 指数退避
-      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
-      await sleep(delay);
-    }
-  }
-  
-  throw lastError;
-}
-
-function isRetryable(error) {
-  // 网络错误、超时等可以重试
-  // 参数错误、权限错误不应该重试
-  return ['NetworkError', 'TimeoutError', 'RateLimitError'].includes(error.name);
-}
-```
-
----
-
-## 📊 工具设计模式
-
-### 模式 1：CRUD 工具组
-
-```javascript
-// 一组相关的 CRUD 工具
-const documentTools = [
-  {
-    name: "create_document",
-    description: "创建新文档",
-    parameters: {
-      required: ["title", "content"],
-      properties: {
-        title: { type: "string" },
-        content: { type: "string" },
-        tags: { type: "array", items: { type: "string" } }
-      }
-    }
-  },
-  {
-    name: "read_document",
-    description: "读取文档内容",
-    parameters: {
-      required: ["id"],
-      properties: {
-        id: { type: "string" }
-      }
-    }
-  },
-  {
-    name: "update_document",
-    description: "更新文档",
-    parameters: {
-      required: ["id"],
-      properties: {
-        id: { type: "string" },
-        title: { type: "string" },
-        content: { type: "string" }
-      }
-    }
-  },
-  {
-    name: "delete_document",
-    description: "删除文档",
-    parameters: {
-      required: ["id"],
-      properties: {
-        id: { type: "string" }
-      }
-    }
-  }
-];
-```
-
-### 模式 2：信息获取 + 执行分离
-
-```javascript
-// 查询类工具：安全，可以自由调用
-const queryTools = [
-  { name: "search_files", ... },
-  { name: "get_file_content", ... },
-  { name: "list_directory", ... },
-  { name: "get_git_status", ... }
-];
-
-// 执行类工具：有副作用，需要确认
-const mutationTools = [
-  { name: "write_file", ... },
-  { name: "delete_file", ... },
-  { name: "run_command", ... },
-  { name: "commit_changes", ... }
-];
-
-// 可以根据场景选择性提供
-function getToolsForMode(mode) {
-  if (mode === "readonly") {
-    return queryTools;
-  }
-  if (mode === "full") {
-    return [...queryTools, ...mutationTools];
-  }
-}
-```
-
-### 模式 3：分层工具
-
-```javascript
-// 高层工具（组合低层工具的能力）
-{
-  name: "refactor_function",
-  description: "重构指定函数：分析→修改→验证",
-  // LLM 调用这个，内部会使用多个低层工具
-}
-
-// 低层工具（原子操作）
-{
-  name: "read_file",
-  name: "write_file",
-  name: "run_tests",
-  // 更细粒度的控制
-}
-```
-
----
-
-## 💡 实践经验
-
-### 工具数量控制
-
-| 工具数量 | 效果 |
-|----------|------|
-| 1-5 个 | 最佳，LLM 选择准确 |
-| 6-15 个 | 可行，需要清晰区分 |
-| 15+ 个 | 容易混淆，考虑分组 |
-
-**解法**：当工具多时，使用"工具路由"
-
-```javascript
-// 元工具：选择工具类别
-{
-  name: "select_tool_category",
-  description: "选择工具类别",
-  parameters: {
-    properties: {
-      category: {
-        type: "string",
-        enum: ["file_operations", "code_analysis", "git_operations", "testing"]
-      }
-    }
-  }
-}
-
-// 然后根据类别加载具体工具
-```
-
-### 工具描述 A/B 测试
-
-```javascript
-// 版本 A
-description: "搜索代码"
-
-// 版本 B
-description: "在代码库中搜索。用于：查找函数定义、搜索特定模式、定位文件位置。"
-
-// 测试哪个版本让 LLM 更准确地选择和使用工具
-```
-
-### 日志和监控
-
-```javascript
-function wrapToolWithLogging(tool) {
-  return {
-    ...tool,
-    execute: async (args) => {
-      const startTime = Date.now();
-      
-      console.log(`[Tool] ${tool.name} 调用`, args);
-      
-      try {
-        const result = await tool.execute(args);
-        
-        console.log(`[Tool] ${tool.name} 成功`, {
-          duration: Date.now() - startTime,
-          resultSize: JSON.stringify(result).length
-        });
-        
-        return result;
-      } catch (error) {
-        console.error(`[Tool] ${tool.name} 失败`, {
-          duration: Date.now() - startTime,
-          error: error.message
-        });
-        
-        throw error;
-      }
-    }
-  };
-}
-```
-
----
-
-## 📚 相关笔记
-
-- [Agent 架构模式](agent-architecture-patterns.md)
+- [Agent 架构模式与设计决策](agent-architecture-patterns.md)
+- [LLM 输出评估框架](../evaluation/llm-evaluation-framework.md)
 - [LLM API 使用最佳实践](../llm/llm-api-best-practices.md)
-- [常见问题与解决方案](../troubleshooting/common-llm-issues.md)
-
----
 
 ## 参考资料
 
-- [OpenAI Function Calling Guide](https://platform.openai.com/docs/guides/function-calling)
-- [Anthropic Tool Use Documentation](https://docs.anthropic.com/claude/docs/tool-use)
-- [LangChain Tools](https://python.langchain.com/docs/modules/tools/)
+- [OpenAI：Function calling](https://developers.openai.com/api/docs/guides/function-calling)（访问日期：2026-10-29）
+- [Anthropic：Tool use overview](https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview)（访问日期：2026-10-29）
+- [Anthropic：Define tools](https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools)（访问日期：2026-10-29）
+- [Anthropic：Handle tool calls](https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls)（访问日期：2026-10-29）
