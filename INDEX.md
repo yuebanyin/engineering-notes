@@ -6,15 +6,17 @@
 
 ### EvalLens：多模型评测工具文档
 
-- [项目 README](https://github.com/yuebanyin/evallens)：产品定位、快速开始、主要功能、Demo 模式和本地运行方式。
+- [项目 README](https://github.com/yuebanyin/evallens)：中英文产品介绍、快速开始、主要功能、Demo 模式和本地运行方式。
 - [架构与设计决策](https://github.com/yuebanyin/evallens/blob/main/docs/architecture.md)：问题定义、Build / Sanity 双门、Provider 适配、存储和评分取舍。
 - [在线 Demo](https://evallens.vercel.app/)：可体验 Mock 模式下的评测流程。
 - **材料类型：** 个人开源项目；可公开分享。
+- **英文写作样例：** 英文 README 与英文架构说明；工作文档以中文为主。
 
 ### AI Agent 评测与 Benchmark 工作方法
 
 - [Core AI Training Team 工作总结与方法论](./docs/ai/Core_AI_Training_Team_工作总结与方法论.md)：多模型评测、Seed Case 分析、Build / Sanity 流程和交付验证。
-- **材料类型：** 个人工作复盘；分享前请确认雇佣协议、客户/团队信息及项目保密要求，并按需要进一步脱敏。
+- **材料类型：** 已脱敏的个人工作复盘。
+<!-- - **材料类型：** 个人工作复盘；分享前请确认雇佣协议、客户/团队信息及项目保密要求，并按需要进一步脱敏。 -->
 
 ### AI / LLM 技术说明
 
@@ -32,7 +34,7 @@
 ## 内容说明
 
 - 个人知识库包含学习笔记、实践总结和工作复盘，并非全部属于正式产品文档或已完成同行评审的交付件。
-- 对外分享工作复盘前，应先确认授权、保密及脱敏边界。
+- 工作复盘已按对外分享需要脱敏；个人知识库中的其他内容仍需按各自标注理解其来源与适用范围。
 - 涉及第三方产品的 API、配置和版本行为，应以对应版本的官方文档和实际验证为准。
 
 ## 技术知识库
