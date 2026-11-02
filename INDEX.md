@@ -31,6 +31,14 @@
 - [Testing Strategy：测试分层与稳定性](./docs/react/testing/testing-strategy-layering.md)：单元、集成与端到端测试的职责划分及可维护性实践。
 - **材料类型：** 个人工程实践笔记。
 
+### 技术文档工程实践
+
+- [技术文档的全生命周期：从研发输入到可验证交付](./docs/shared/engineering/technical-documentation-lifecycle.md)：从受控输入、跨职能评审到版本发布的工作模型。
+- [从芯片规格到 Datasheet 与 User Guide](./docs/shared/engineering/chip-datasheet-user-guide-workflow.md)：面向芯片文档的内容设计、追溯和验证方法，不含真实器件参数。
+- [技术文档发布质量清单](./docs/shared/engineering/technical-documentation-release-checklist.md)：可按产品风险裁剪的发布前检查与放行记录。
+- [AI 辅助技术写作](./docs/shared/engineering/ai-assisted-technical-writing.md)：在数据边界内使用 AI，并保留事实核验和发布责任。
+- **材料类型：** 个人方法论样例；不代表已在芯片产品中实施，实际内容以受控规格和技术评审为准。
+
 ## 内容说明
 
 - 个人知识库包含学习笔记、实践总结和工作复盘，并非全部属于正式产品文档或已完成同行评审的交付件。
