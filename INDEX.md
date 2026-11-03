@@ -4,6 +4,11 @@
 
 ## 精选作品
 
+### StreamChat：AI 流式对话工作台
+
+- [GitHub 项目与中英文 README](https://github.com/yuebanyin/stream-chat-agent)：Next.js / TypeScript 对话应用，支持 SSE 流式回复、OpenAI-compatible Provider、BYOK、本地开发 Ollama，以及中英文界面和深色主题。
+- [在线 Demo](https://stream-chat-agent.vercel.app)：公开环境使用 BYOK；访客需配置自己的 Provider API Key。
+
 ### EvalLens：多模型评测工具文档
 
 - [项目 README](https://github.com/yuebanyin/evallens)：中英文产品介绍、快速开始、主要功能、Demo 模式和本地运行方式。

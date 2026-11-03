@@ -12,6 +12,11 @@
 - **材料类型：** 个人开源项目；可公开分享。
 - **英文写作样例：** 英文 README 与英文架构说明；工作文档以中文为主。
 
+### StreamChat：AI 流式对话工作台
+
+- [GitHub 项目与中英文 README](https://github.com/yuebanyin/stream-chat-agent)：Next.js / TypeScript 对话应用，支持 SSE 流式回复、OpenAI-compatible Provider、BYOK、本地开发 Ollama，以及中英文界面和深色主题。
+- [在线 Demo](https://stream-chat-agent.vercel.app)：公开环境使用 BYOK；访客需配置自己的 Provider API Key。
+
 ### AI Agent 评测与 Benchmark 工作方法
 
 - [Core AI Training Team 工作总结与方法论](./docs/ai/Core_AI_Training_Team_工作总结与方法论.md)：多模型评测、Seed Case 分析、Build / Sanity 流程和交付验证。
@@ -74,8 +79,3 @@
 - [Vue](./docs/vue/00-roadmap.md)
 - [Node.js](./docs/node/00-roadmap.md)
 - [AI / LLM](./docs/ai/00-roadmap.md)
-
-## 写作风格
-
-- 优先采用"问题 → 约束 → 决策 → 验证"的结构
-- 仅在代码片段通用且非敏感时才包含可运行示例
